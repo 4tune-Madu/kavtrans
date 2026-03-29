@@ -1,0 +1,42 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3>Edit Payment Account</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Account Type</label>
+            <select name="account_type" class="form-control">
+                <option value="bank" {% if account.account_type == "bank" %}selected{% endif %}>Bank</option>
+                <option value="crypto" {% if account.account_type == "crypto" %}selected{% endif %}>Crypto</option>
+                <option value="paypal" {% if account.account_type == "paypal" %}selected{% endif %}>PayPal</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Name</label>
+            <input type="text" name="name" value="{{ account.name }}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label>Details</label>
+            <textarea name="details" class="form-control">{{ account.details }}</textarea>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" name="is_active" class="form-check-input"
+                   {% if account.is_active %}checked{% endif %}>
+            <label class="form-check-label">Active</label>
+        </div>
+
+        <button class="btn btn-dark">Update</button>
+
+    </form>
+
+</div>
+
+{% endblock %}

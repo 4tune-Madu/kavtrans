@@ -1,0 +1,107 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block content %}
+
+<style>
+.tracking-wrapper{
+    max-width:1000px;
+    margin:50px auto;
+}
+
+/* Header */
+.tracking-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.tracking-title{
+    color:#162e4d;
+    font-weight:600;
+}
+
+.header-buttons a{
+    margin-left:10px;
+}
+
+/* Update card */
+.update-card{
+    background:white;
+    padding:20px 25px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
+    margin-bottom:15px;
+}
+
+/* Status badges */
+.badge-status-pending{background:#6c757d;}
+.badge-status-picked_up{background:#17a2b8;}
+.badge-status-in_transit{background:#ffc107; color:black;}
+.badge-status-arrived_facility{background:#0dcaf0;}
+.badge-status-out_for_delivery{background:#fd7e14;}
+.badge-status-delivered{background:#198754;}
+
+/* Timestamp */
+.update-time{
+    font-size:13px;
+    color:#555;
+    margin-bottom:8px;
+    display:block;
+}
+
+/* Note */
+.update-note{
+    font-style:italic;
+    color:#333;
+    margin-top:5px;
+}
+</style>
+
+<div class="container tracking-wrapper">
+
+<!-- HEADER -->
+<div class="tracking-header">
+
+<h3 class="tracking-title">Tracking Updates</h3>
+
+<div class="header-buttons">
+<a href="{% url 'package_detail' package.id %}" class="btn btn-dark">Back to Package</a>
+<a href="{% url 'dashboard_home' %}" class="btn btn-secondary">Dashboard</a>
+<a href="{% url 'add_tracking_update' package.tracking_number %}" class="btn btn-success">Add New Update</a>
+</div>
+
+</div>
+
+<!-- Package Info -->
+<div class="mb-3">
+<strong>Tracking Number:</strong> {{ package.tracking_number }}
+</div>
+
+<hr>
+
+<!-- Updates List -->
+{% for update in updates %}
+<div class="card mb-2 p-3 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ update.timestamp|date:"M d, Y H:i" }}</strong> — 
+            <span class="badge badge-status-{{ update.status }}">{{ update.get_status_display }}</span> 
+            @ {{ update.location }}
+            {% if update.note %} - "{{ update.note }}" {% endif %}
+        </div>
+        <div>
+            <!-- Edit button -->
+            <a href="{% url 'edit_tracking_update' update.id %}" class="btn btn-sm btn-primary">Edit</a>
+            <!-- Delete button -->
+            <a href="{% url 'delete_tracking_update' update.id %}" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+    </div>
+</div>
+{% empty %}
+<p>No tracking updates yet.</p>
+{% endfor %}
+
+</div>
+
+{% endblock %}

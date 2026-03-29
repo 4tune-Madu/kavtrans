@@ -1,0 +1,187 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block content %}
+
+<style>
+.donation-wrapper{
+    max-width:1200px;
+    margin:50px auto;
+}
+
+/* Header */
+.donation-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.donation-title{
+    color:#162e4d;
+    font-weight:600;
+}
+
+/* Stats cards */
+.stat-card{
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.stat-number{
+    font-size:24px;
+    font-weight:600;
+    color:#162e4d;
+}
+
+/* Table */
+.table-card{
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+.table thead{
+    background:#162e4d;
+    color:white;
+}
+
+/* Buttons */
+.btn-main{
+    background:#162e4d;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 18px;
+}
+
+.btn-main:hover{
+    background:#0f223b;
+}
+</style>
+
+<div class="container donation-wrapper">
+
+<!-- HEADER -->
+<div class="donation-header">
+    <h3 class="donation-title">Donation Dashboard</h3>
+
+    <a href="{% url 'add_donation_cause' %}" class="btn btn-main">
+        + Add Cause
+    </a>
+</div>
+
+<!-- ANALYTICS -->
+<div class="row g-4 mb-4">
+
+<div class="col-md-4">
+<div class="stat-card">
+<div class="stat-number">${{ total_raised }}</div>
+<p>Total Raised</p>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="stat-card">
+<div class="stat-number">${{ total_target }}</div>
+<p>Total Target</p>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="stat-card">
+<div class="stat-number">{{ total_causes }}</div>
+<p>Total Causes</p>
+</div>
+</div>
+
+</div>
+
+<!-- CAUSES TABLE -->
+<div class="table-card">
+
+<h5 class="mb-3">All Donation Causes</h5>
+
+<table class="table table-hover align-middle">
+
+<thead>
+<tr>
+<th>Image</th>
+<th>Title</th>
+<th>Raised</th>
+<th>Target</th>
+<th>Progress</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for cause in causes %}
+
+<tr>
+
+<td>
+{% if cause.image %}
+<img src="{{ cause.image.url }}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
+{% endif %}
+</td>
+
+<td>{{ cause.title }}</td>
+
+<td>${{ cause.amount_raised }}</td>
+
+<td>${{ cause.target_amount }}</td>
+
+<td>
+<div class="progress" style="height:10px;">
+<div class="progress-bar" 
+style="width: {{ cause.progress_percentage }}%; background:#162e4d;">
+</div>
+</div>
+<small>{{ cause.progress_percentage }}%</small>
+</td>
+
+<td>
+<td>
+
+<a href="{% url 'edit_donation_cause' cause.id %}" 
+class="btn btn-sm btn-warning">
+Edit
+</a>
+
+<form action="{% url 'delete_donation_cause' cause.id %}" 
+      method="POST" 
+      style="display:inline-block;"
+      onsubmit="return confirm('Are you sure you want to delete this cause?');">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-danger">
+        Delete
+    </button>
+</form>
+
+</td>
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="6" class="text-center">No causes yet</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+{% endblock %}

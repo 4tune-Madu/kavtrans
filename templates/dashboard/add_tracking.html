@@ -1,0 +1,209 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block content %}
+
+<style>
+.update-wrapper{
+    max-width:600px;
+    margin:50px auto;
+}
+
+/* Header */
+.update-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.update-title{
+    color:#162e4d;
+    font-weight:600;
+}
+
+.header-buttons a{
+    margin-left:10px;
+}
+
+/* Card */
+.update-card{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Form styling */
+.update-form label{
+    font-weight:500;
+    margin-top:10px;
+}
+
+.update-form input,
+.update-form textarea,
+.update-form select{
+    width:100%;
+    padding:12px 15px;
+    margin-top:5px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    box-shadow:0 3px 10px rgba(0,0,0,0.05);
+    font-size:16px;
+    transition:0.3s;
+}
+
+.update-form input:focus,
+.update-form textarea:focus,
+.update-form select:focus{
+    outline:none;
+    border-color:#162e4d;
+    box-shadow:0 4px 12px rgba(22,46,77,0.4);
+}
+
+.update-form textarea{
+    resize:none;
+    min-height:100px;
+}
+
+/* Styled select dropdown arrow */
+.update-form select{
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    background:url('data:image/svg+xml;utf8,<svg fill="%23622e4d" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 12px center;
+    background-color:#fff;
+    background-size:16px;
+}
+
+/* Button */
+.update-form button{
+    margin-top:15px;
+    padding:12px 25px;
+    background:#162e4d;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    transition:0.3s;
+}
+
+.update-form button:hover{
+    background:#0f223b;
+    transform:translateY(-2px);
+    box-shadow:0 6px 15px rgba(0,0,0,0.25);
+}
+</style>
+
+<div class="container update-wrapper">
+
+<!-- HEADER -->
+<div class="update-header">
+<h3 class="update-title">Add Tracking Update</h3>
+
+<div class="header-buttons">
+<a href="{% url 'package_detail' package.id %}" class="btn btn-dark">Back to Package</a>
+<a href="{% url 'dashboard_home' %}" class="btn btn-secondary">Dashboard</a>
+</div>
+</div>
+
+<!-- CARD -->
+<div class="update-card">
+
+<p><strong>Tracking Number:</strong> {{ package.tracking_number }}</p>
+
+<form method="POST" class="update-form">
+    {% csrf_token %}
+
+    <label>Location</label>
+    <input type="text" name="location" placeholder="Enter current location" required>
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+
+    <label>Status</label>
+    <select name="status" required>
+        <option value="" disabled selected>Select status</option>
+        <option value="pending">Pending</option>
+        <option value="picked_up">Picked Up</option>
+        <option value="in_transit">In Transit</option>
+        <option value="arrived_facility">Arrived At Facility</option>
+        <option value="out_for_delivery">Out For Delivery</option>
+        <option value="delivered">Delivered</option>
+    </select>
+
+    <label>Note (optional)</label>
+    <textarea name="note" placeholder="Additional details about this update"></textarea>
+
+    <button type="submit">Add Update</button>
+</form>
+
+</div>
+<div id="map" style="height:400px;"></div>
+
+<script>
+
+var map = L.map('map').setView([9.0820, 8.6753], 6);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+
+var marker;
+
+/* =========================
+   ✅ ADD GEOCODER SEARCH
+========================= */
+L.Control.geocoder({
+    defaultMarkGeocode: false
+})
+.on('markgeocode', function(e) {
+
+    var lat = e.geocode.center.lat;
+    var lng = e.geocode.center.lng;
+
+    map.setView([lat, lng], 13);
+
+    if(marker){
+        map.removeLayer(marker);
+    }
+
+    marker = L.marker([lat,lng]).addTo(map)
+        .bindPopup(e.geocode.name)
+        .openPopup();
+
+    // Save coordinates
+    document.getElementById("latitude").value = lat;
+    document.getElementById("longitude").value = lng;
+
+    document.querySelector('input[name="location"]').value = e.geocode.name;
+
+})
+.addTo(map);
+
+
+/* =========================
+   ✅ CLICK TO SELECT LOCATION
+========================= */
+map.on('click', function(e){
+
+    var lat = e.latlng.lat;
+    var lng = e.latlng.lng;
+
+    if(marker){
+        map.removeLayer(marker);
+    }
+
+    marker = L.marker([lat,lng]).addTo(map)
+        .bindPopup("Selected Package Location")
+        .openPopup();
+
+    document.getElementById("latitude").value = lat;
+    document.getElementById("longitude").value = lng;
+
+    document.querySelector('input[name="location"]').value = lat + ", " + lng;
+});
+
+</script>
+</div>
+{% endblock %}

@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- HERO -->
+<section id="hero" class="hero"
+style="background:linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('{% static "images/hero-bg.jpg" %}') center/cover no-repeat;">
+
+<div class="container text-white">
+<div class="row align-items-center">
+
+<!-- LEFT CONTENT -->
+<div class="col-lg-6">
+  <h1 class="display-4 fw-bold">Smart Logistics for a Moving World</h1>
+  <p class="lead mt-3">
+    Reliable delivery, real-time tracking, and global logistics solutions.
+  </p>
+
+  <!-- ABOUT + CONTACT INLINE -->
+  <div class="mt-4 d-flex flex-wrap gap-4 small">
+    <div><strong>Fast & reliable global courier services</strong></div>
+    <div><strong>Contact:</strong> support@kavtrans.com</div>
+  </div>
+</div>
+
+<!-- RIGHT TRACK BOX -->
+<div class="col-lg-6">
+  <div class="track-box">
+    <form method="GET" class="track-form d-flex">
+      <input type="text" name="tracking_number" placeholder="Enter Tracking Number" required>
+      <button type="submit" id="trackBtn">
+  <span id="btnText">Track Package</span>
+  <span id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+</button>
+    </form>
+  </div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- TRACKING RESULT -->
+<div class="container">
+
+{% if tracking_result %}
+
+  {% if tracking_result == "not_found" %}
+    <div class="alert alert-danger mt-4 text-center">
+      Tracking number not found.
+    </div>
+
+  {% else %}
+
+  <div id="tracking-card" class="track-result card shadow-lg mt-5 p-4 position-relative">
+      <button class="close-btn" onclick="this.parentElement.style.opacity='0'; setTimeout(()=>this.parentElement.style.display='none',300)"">
+  &times;
+</button>
+    <h4 class="mb-4 fw-bold text-primary">Tracking Information</h4>
+
+    <!-- DETAILS -->
+    <div class="row g-3">
+
+      <div class="col-md-4"><div class="p-3 bg-light rounded">
+        <small>Tracking Number</small>
+        <div class="fw-bold">{{ tracking_result.tracking_number }}</div>
+      </div></div>
+
+      <div class="col-md-4"><div class="p-3 bg-light rounded">
+        <small>Receiver</small>
+        <div class="fw-bold">{{ tracking_result.receiver_name }}</div>
+      </div></div>
+
+      <div class="col-md-4"><div class="p-3 bg-light rounded">
+        <small>Status</small>
+        <div><span class="badge bg-success">{{ tracking_result.status }}</span></div>
+      </div></div>
+
+      <div class="col-md-4"><div class="p-3 bg-light rounded">
+        <small>Location</small>
+        <div class="fw-bold">{{ tracking_result.current_location }}</div>
+      </div></div>
+
+      <div class="col-md-4"><div class="p-3 bg-light rounded">
+        <small>Weight</small>
+        <div class="fw-bold">{{ tracking_result.weight }} kg</div>
+      </div></div>
+
+      <div class="col-md-4"><div class="p-3 bg-light rounded">
+        <small>Description</small>
+        <div class="fw-bold">{{ tracking_result.description }}</div>
+      </div></div>
+
+    </div>
+
+    <!-- MAP (SMALL CARD) -->
+    {% if latest_update and latest_update.latitude and latest_update.longitude %}
+    <div class="mt-4">
+      <h5 class="fw-bold">Live Location</h5>
+
+      <div class="card p-2 shadow-sm" style="max-width:400px;">
+        <div id="map" style="height:250px;"></div>
+      </div>
+    </div>
+
+    <script>
+      var lat = {{ latest_update.latitude }};
+      var lng = {{ latest_update.longitude }};
+      var locationName = "{{ latest_update.location|escapejs }}";
+
+      var map = L.map('map', {
+          zoomControl: false,
+          dragging: false,
+          scrollWheelZoom: false
+      }).setView([lat, lng], 12);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution:'© OpenStreetMap'
+      }).addTo(map);
+
+      L.marker([lat, lng]).addTo(map)
+          .bindPopup(locationName)
+          .openPopup();
+    </script>
+    {% endif %}
+
+    <!-- TIMELINE -->
+    {% if tracking_result.tracking_updates.all %}
+    <div class="mt-5">
+      <h5 class="fw-bold">Shipment Timeline</h5>
+
+      <ul class="timeline">
+        {% for update in tracking_result.tracking_updates.all %}
+        <li>
+          <span class="dot"></span>
+          <div>
+            <strong>{{ update.location }}</strong><br>
+            <small>{{ update.timestamp|date:"M d, Y H:i" }}</small><br>
+            <span class="badge bg-primary">{{ update.status }}</span>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+  </div>
+
+  {% endif %}
+
+{% endif %}
+
+</div>
+
+
+
+<!-- SERVICES -->
+<section id="services" class="services bg-light">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-5">Our Services</h2>
+
+    <div class="row justify-content-center g-4">
+      <div class="col-md-4 col-lg-3">🚚 <h5>Domestic Courier</h5></div>
+      <div class="col-md-4 col-lg-3">🌍 <h5>International Shipping</h5></div>
+      <div class="col-md-4 col-lg-3">📍 <h5>Tracking</h5></div>
+      <div class="col-md-4 col-lg-3">⚡ <h5>Express Delivery</h5></div>
+    </div>
+  </div>
+</section>
+
+<!-- Statistics -->
+ <section class="stats-section py-5">
+  <div class="container">
+
+    <h2 class="text-center fw-bold mb-5">Our Impact in Numbers</h2>
+
+    <div class="stats-scroll-wrapper">
+
+      <div class="stats-scroll">
+
+        <!-- STAT ITEM -->
+        <div class="stat-card text-center">
+          <i class="bi bi-box-seam"></i>
+          <h3>25,000+</h3>
+          <p>Successful Deliveries</p>
+        </div>
+
+        <div class="stat-card text-center">
+          <i class="bi bi-globe"></i>
+          <h3>250+</h3>
+          <p>Worldwide Destinations</p>
+        </div>
+
+        <div class="stat-card text-center">
+          <i class="bi bi-star"></i>
+          <h3>4.7/5</h3>
+          <p>Customer Satisfaction</p>
+        </div>
+
+        <div class="stat-card text-center">
+          <i class="bi bi-building"></i>
+          <h3>10k+</h3>
+          <p>Storage Capacity</p>
+        </div>
+
+        <div class="stat-card text-center">
+          <i class="bi bi-truck"></i>
+          <h3>100+</h3>
+          <p>Specialized Vehicles</p>
+        </div>
+
+        <!-- DUPLICATE FOR LOOP -->
+        <div class="stat-card text-center">
+          <i class="bi bi-box-seam"></i>
+          <h3>25,000+</h3>
+          <p>Successful Deliveries</p>
+        </div>
+
+        <div class="stat-card text-center">
+          <i class="bi bi-globe"></i>
+          <h3>250+</h3>
+          <p>Worldwide Destinations</p>
+        </div>
+
+        <div class="stat-card text-center">
+          <i class="bi bi-star"></i>
+          <h3>4.7/5</h3>
+          <p>Customer Satisfaction</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+
+<!--New Services-->
+<section class="scroll-services">
+
+<div class="scroll-wrapper">
+
+  <!-- LEFT FIXED TEXT -->
+  <div class="scroll-left">
+    <h2 class="fw-bold">Our Core Logistics Solutions</h2>
+    <p>Powering global supply chains with precision and reliability.</p>
+  </div>
+
+  <!-- RIGHT SCROLLING CARDS -->
+  <div class="scroll-right">
+
+    <!-- CARD -->
+    <div class="service-card">
+      <img src="{% static 'images/service1.jpg' %}">
+      <h4>Global Freight Forwarding</h4>
+      <p>KAVTRANS coordinates international shipments across air, sea, and land for efficient delivery.</p>
+    </div>
+
+    <div class="service-card">
+      <img src="{% static 'images/service2.jpg' %}">
+      <h4>Express Courier</h4>
+      <p>Fast, reliable same-day and overnight delivery for urgent shipments.</p>
+    </div>
+
+    <div class="service-card">
+      <img src="{% static 'images/service3.jpg' %}">
+      <h4>Warehousing & Storage</h4>
+      <p>Secure, scalable storage solutions with advanced security systems.</p>
+    </div>
+
+    <div class="service-card">
+      <img src="{% static 'images/service4.jpg' %}">
+      <h4>Inventory Management</h4>
+      <p>Track stock levels with full visibility using advanced WMS systems.</p>
+    </div>
+
+    <div class="service-card">
+      <img src="{% static 'images/service5.jpg' %}">
+      <h4>Customs Clearance</h4>
+      <p>We handle documentation and duties for seamless international shipping.</p>
+    </div>
+
+    <div class="service-card">
+      <img src="{% static 'images/service6.jpg' %}">
+      <h4>Last-Mile Delivery</h4>
+      <p>Efficient delivery to final destination with optimized routing.</p>
+    </div>
+
+    <div class="service-card">
+      <img src="{% static 'images/service7.jpg' %}">
+      <h4>E-commerce Fulfillment</h4>
+      <p>We manage pick, pack, and shipping for online businesses.</p>
+    </div>
+
+    <div class="service-card">
+      <img src="{% static 'images/service8.jpg' %}">
+      <h4>Reverse Logistics</h4>
+      <p>Efficient returns management and restocking processes.</p>
+    </div>
+
+  </div>
+
+</div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-5 bg-light">
+<div class="container">
+<h2 class="text-center fw-bold mb-5">Frequently Asked Questions</h2>
+
+<div class="accordion shadow rounded">
+
+<div class="accordion-item">
+<button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">
+How can I track my shipment?
+</button>
+<div id="faq1" class="accordion-collapse collapse show">
+<div class="accordion-body">
+Track your package 24/7 using your tracking number.
+</div>
+</div>
+</div>
+
+<div class="accordion-item">
+<button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">
+Delivery time for international shipments?
+</button>
+<div id="faq2" class="accordion-collapse collapse">
+<div class="accordion-body">
+Express: 3–5 days | Standard: 10–14 days
+</div>
+</div>
+</div>
+
+<div class="accordion-item">
+<button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">
+Is cargo insured?
+</button>
+<div id="faq3" class="accordion-collapse collapse">
+<div class="accordion-body">
+Yes, we provide full insurance coverage options.
+</div>
+</div>
+</div>
+
+<div class="accordion-item">
+<button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">
+Do you handle customs?
+</button>
+<div id="faq4" class="accordion-collapse collapse">
+<div class="accordion-body">
+Yes, we manage all documentation and duties.
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- CTA -->
+<section class="cta text-center">
+  <h2>Let Us Deliver Your Package</h2>
+  <a href="#hero" class="btn btn-warning mt-3">Track Now</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+
+<div class="container">
+<div class="row">
+
+<!-- COLUMN 1 -->
+<div class="col-md-3">
+<h5 class="fw-bold">KAVTRANS</h5>
+<p>Redefining logistics with secure and fast delivery solutions.</p>
+</div>
+
+<!-- COLUMN 2 -->
+<div class="col-md-3">
+<h6 class="fw-bold">Quick Links</h6>
+<ul class="list-unstyled">
+<li><a href="#hero">Home</a></li>
+<li><a href="#services">Services</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ul>
+</div>
+
+<!-- COLUMN 3 -->
+<div class="col-md-3">
+<h6 class="fw-bold">Contact</h6>
+<p>info@kavtrans.com<br>+1 123 4567</p>
+</div>
+
+<!-- COLUMN 4 -->
+<div class="col-md-3">
+<h6 class="fw-bold">Stay Updated</h6>
+<input class="form-control mb-2" placeholder="Email address">
+<button class="btn btn-warning w-100">Subscribe</button>
+</div>
+
+</div>
+
+<hr>
+
+<div class="text-center small">
+© 2026 <strong>KAVTRANS Courier and Travel LLC</strong>. All rights reserved.
+</div>
+
+</div>
+</footer>
+
+<!-- TIMELINE STYLE -->
+<style>
+.timeline {
+  list-style:none;
+  padding-left:20px;
+  border-left:2px solid #ddd;
+}
+.timeline li {
+  margin-bottom:20px;
+  position:relative;
+}
+.timeline .dot {
+  width:10px;
+  height:10px;
+  background:#ff6b00;
+  border-radius:50%;
+  position:absolute;
+  left:-6px;
+  top:5px;
+}
+</style>
+
+<!--For Tracking spinner-->
+<script>
+document.querySelector('.track-form').addEventListener('submit', function() {
+
+    const btn = document.getElementById('trackBtn');
+    const text = document.getElementById('btnText');
+    const spinner = document.getElementById('btnSpinner');
+
+    // Disable button
+    btn.disabled = true;
+
+    // Show spinner
+    spinner.classList.remove('d-none');
+
+    // Change text
+    text.innerText = "Tracking...";
+
+});
+</script>
+<!-- Auto scroll to tracking results -->
+<script>
+{% if tracking_result %}
+  window.onload = function() {
+    document.getElementById("tracking-card")?.scrollIntoView({behavior: "smooth"});
+  };
+{% endif %}
+</script>
+
+
+
+{% endblock %}

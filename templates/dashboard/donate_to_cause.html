@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container" style="max-width:600px; margin:50px auto;">
+
+    <h3>{{ cause.title }}</h3>
+
+    {% if cause.image %}
+        <img src="{{ cause.image.url }}" style="width:100%; border-radius:10px;">
+    {% endif %}
+
+    <p class="mt-3">{{ cause.description }}</p>
+
+    <h5>Target: ${{ cause.target_amount }}</h5>
+    <h5>Raised: ${{ cause.amount_raised }}</h5>
+
+    <hr>
+
+    <form method="POST" action="">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label>Enter Amount ($)</label>
+        <input type="number" name="amount" class="form-control" required min="1" step="any">
+    </div>
+    <button class="btn btn-dark w-100">Next</button>
+</form>
+</div>
+
+{% endblock %}

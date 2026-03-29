@@ -1,0 +1,226 @@
+from django.shortcuts import render
+from packages.models import Package
+from tracking.models import TrackingHistory   # ✅ ADD THIS
+
+def home(request):
+
+    tracking_result = None
+    latest_update = None   # ✅ NEW
+
+    tracking_number = request.GET.get("tracking_number")
+
+    if tracking_number:
+        try:
+            tracking_result = Package.objects.get(
+                tracking_number__iexact=tracking_number
+            )
+
+            # ✅ GET LATEST TRACKING UPDATE
+            latest_update = TrackingHistory.objects.filter(
+                package=tracking_result
+            ).order_by("-timestamp").first()
+
+        except Package.DoesNotExist:
+            tracking_result = "not_found"
+
+    return render(request, "core/home.html", {
+        "tracking_result": tracking_result,
+        "latest_update": latest_update   # ✅ PASS TO TEMPLATE
+    })
+
+
+# Donation Cause
+from .models import DonationCause
+
+def donation_page(request):
+    causes = DonationCause.objects.all().order_by('-created_at')
+
+    return render(request, "core/donations.html", {
+        "causes": causes
+    })
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import DonationCause
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+@login_required(login_url="admin_login")
+def donation_causes(request):
+    causes = DonationCause.objects.all()
+    return render(request, "dashboard/donation_causes.html", {"causes": causes})
+
+from decimal import Decimal, InvalidOperation
+
+@login_required(login_url="admin_login")
+def add_donation_cause(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+
+        try:
+            target_amount = Decimal(request.POST.get("target_amount") or "0")
+            amount_raised = Decimal(request.POST.get("amount_raised") or "0")
+        except InvalidOperation:
+            messages.error(request, "Please enter valid numbers for amounts.")
+            return redirect("add_donation_cause")
+
+        image = request.FILES.get("image")
+
+        DonationCause.objects.create(
+            title=title,
+            description=description,
+            target_amount=target_amount,
+            amount_raised=amount_raised,
+            image=image
+        )
+
+        messages.success(request, "Donation cause added successfully.")
+        return redirect("donation_causes")
+
+    return render(request, "dashboard/add_donation_cause.html")
+
+@login_required(login_url="admin_login")
+def edit_donation_cause(request, cause_id):
+    cause = get_object_or_404(DonationCause, id=cause_id)
+
+    if request.method == "POST":
+        cause.title = request.POST.get("title")
+        cause.description = request.POST.get("description")
+        cause.target_amount = request.POST.get("target_amount")
+        cause.amount_raised = request.POST.get("amount_raised", 0)
+
+        # update image if a new one is uploaded
+        if "image" in request.FILES:
+            cause.image = request.FILES["image"]
+
+        cause.save()
+        messages.success(request, "Donation cause updated successfully.")
+        return redirect("donation_causes")
+
+    return render(request, "dashboard/edit_donation_cause.html", {"cause": cause})
+
+
+from django.db.models import Sum
+from .models import DonationCause
+
+@login_required(login_url="admin_login")
+def donation_dashboard(request):
+    causes = DonationCause.objects.all().order_by('-created_at')
+
+    total_raised = DonationCause.objects.aggregate(
+        total=Sum('amount_raised')
+    )['total'] or 0
+
+    total_target = DonationCause.objects.aggregate(
+        total=Sum('target_amount')
+    )['total'] or 0
+
+    total_causes = causes.count()
+
+    context = {
+        "causes": causes,
+        "total_raised": total_raised,
+        "total_target": total_target,
+        "total_causes": total_causes,
+    }
+
+    return render(request, "dashboard/donations.html", context)
+
+from django.views.decorators.http import require_POST
+
+@login_required(login_url="admin_login")
+@require_POST
+def delete_donation_cause(request, cause_id):
+    cause = get_object_or_404(DonationCause, id=cause_id)
+    cause.delete()
+    messages.success(request, "Donation cause deleted successfully.")
+    return redirect("donation_dashboard")
+
+
+from django.shortcuts import render
+
+def donation_success(request):
+    return render(request, "donation_success.html")
+
+
+from django.shortcuts import render
+
+def donation_cancel(request):
+    return render(request, "donation_cancel.html")
+
+
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import DonationCause, PaymentAccount, Donation
+from django.contrib.auth.decorators import login_required
+import random
+
+# STEP 1: ENTER AMOUNT
+def donate_amount(request, cause_id):
+    cause = get_object_or_404(DonationCause, id=cause_id)
+
+    if request.method == "POST":
+        amount = request.POST.get("amount")
+
+        if not amount:
+            return render(request, "donate.html", {
+                "cause": cause,
+                "error": "Please enter amount"
+            })
+
+        # SAVE amount in session
+        request.session['donation_amount'] = amount
+
+        return redirect('choose_payment', cause_id=cause.id)
+
+    return render(request, "dashboard/donate.html", {"cause": cause})
+
+
+# STEP 2: CHOOSE PAYMENT
+def choose_payment(request, cause_id):
+    cause = get_object_or_404(DonationCause, id=cause_id)
+    amount = request.session.get('donation_amount')
+
+    if not amount:
+        return redirect('donate_amount', cause_id=cause.id)
+
+    accounts = PaymentAccount.objects.filter(is_active=True)
+
+    if request.method == "POST":
+        payment_type = request.POST.get("payment_type")
+
+        if not payment_type:
+            return render(request, "choose_payment.html", {
+                "cause": cause,
+                "amount": amount,
+                "error": "Please select a payment method"
+            })
+
+        # RANDOM ACCOUNT
+        account = accounts.filter(account_type=payment_type).order_by('?').first()
+
+        if not account:
+            return render(request, "choose_payment.html", {
+                "cause": cause,
+                "amount": amount,
+                "error": "No account available for this method"
+            })
+
+        # SAVE DONATION
+        donation = Donation.objects.create(
+            cause=cause,
+            amount=amount,
+            payment_account=account
+        )
+
+        return render(request, "dashboard/donation_success.html", {
+            "donation": donation
+        })
+
+    return render(request, "dashboard/choose_payment.html", {
+        "cause": cause,
+        "amount": amount
+    })

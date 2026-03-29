@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width:600px; margin:50px auto;">
+
+    <h3>{{ cause.title }}</h3>
+    <p>Amount: ${{ amount }}</p>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Select Payment Method:</label><br>
+            <input type="radio" name="payment_type" value="bank" id="bank">
+            <label for="bank">💳 Bank Transfer</label><br>
+
+            <input type="radio" name="payment_type" value="crypto" id="crypto">
+            <label for="crypto">₿ Crypto</label><br>
+
+            <input type="radio" name="payment_type" value="paypal" id="paypal">
+            <label for="paypal">🅿️ PayPal</label>
+        </div>
+
+        <button class="btn btn-dark w-100">Proceed</button>
+    </form>
+
+</div>
+{% endblock %}

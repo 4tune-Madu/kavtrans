@@ -1,0 +1,42 @@
+<div class="container mt-5">
+    <h3>Payment Accounts</h3>
+
+    <!-- ADD FORM -->
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+
+        <select name="account_type" class="form-control mb-2" required>
+            <option value="">Select Type</option>
+            <option value="bank">Bank</option>
+            <option value="crypto">Crypto</option>
+            <option value="paypal">PayPal</option>
+        </select>
+
+        <input type="text" name="name" placeholder="Account Name" class="form-control mb-2" required>
+
+        <textarea name="details" placeholder="Account Details" class="form-control mb-2" required></textarea>
+
+        <button class="btn btn-dark">Add Account</button>
+    </form>
+
+    <!-- LIST -->
+    <table class="table table-hover">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for acc in accounts %}
+        <tr>
+            <td>{{ acc.name }}</td>
+            <td>{{ acc.account_type }}</td>
+            <td>
+                <a href="{% url 'delete_payment_account' acc.id %}" class="btn btn-danger btn-sm">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

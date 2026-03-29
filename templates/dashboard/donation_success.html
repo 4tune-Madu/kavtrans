@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width:600px; margin:50px auto; text-align:center;">
+    <h3>Thank you for your donation!</h3>
+    <p>You donated ${{ donation.amount }} to <strong>{{ donation.cause.title }}</strong>.</p>
+
+    <h5>Payment Details:</h5>
+    <p><strong>{{ donation.payment_account.name }}</strong></p>
+    <p>{{ donation.payment_account.details }}</p>
+
+    <a href="{% url 'donations' %}" class="btn btn-dark mt-3">Back to Donations</a>
+</div>
+{% endblock %}

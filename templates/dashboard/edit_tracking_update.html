@@ -1,0 +1,32 @@
+{% extends "dashboard/dashboard_base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3>Edit Tracking Update</h3>
+
+    <form method="POST" class="mt-3">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Location</label>
+            <input type="text" name="location" value="{{ update.location }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Status</label>
+            <select name="status" class="form-select" required>
+                <option value="pending" {% if update.status == "pending" %}selected{% endif %}>Pending</option>
+                <option value="picked_up" {% if update.status == "picked_up" %}selected{% endif %}>Picked Up</option>
+                <option value="in_transit" {% if update.status == "in_transit" %}selected{% endif %}>In Transit</option>
+                <option value="arrived_facility" {% if update.status == "arrived_facility" %}selected{% endif %}>Arrived At Facility</option>
+                <option value="out_for_delivery" {% if update.status == "out_for_delivery" %}selected{% endif %}>Out For Delivery</option>
+                <option value="delivered" {% if update.status == "delivered" %}selected{% endif %}>Delivered</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Note (Optional)</label>
+            <textarea name="note" class="form-control">{{ update.note }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="{% url 'tracking_updates' update.package.tracking_number %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
