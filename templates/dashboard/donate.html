@@ -1,55 +1,58 @@
-{% extends "base.html" %}
+{% extends "dashboard_base.html" %}
 {% load static %}
 
 {% block content %}
 
-<div class="container" style="max-width:900px; margin:60px auto;">
+<div class="container donate-container">
 
-    <!-- CAUSE HEADER -->
-    <div class="card p-4 shadow-sm mb-4 text-center">
-        <h2 class="fw-bold">{{ cause.title }}</h2>
+    <!-- HEADER CARD -->
+    <div class="donate-card text-center">
+
+        <h2 class="fw-bold mb-2">{{ cause.title }}</h2>
         <p class="text-muted">{{ cause.description }}</p>
 
+        <!-- PROGRESS INFO -->
         <div class="mt-3">
-            <strong>${{ cause.amount_raised }}</strong> raised of 
-            <strong>${{ cause.target_amount }}</strong>
+            <span class="amount">${{ cause.amount_raised }}</span>
+            <small class="text-muted">raised of ${{ cause.target_amount }}</small>
         </div>
 
-        <div class="progress mt-2" style="height:20px;">
+        <!-- PROGRESS BAR -->
+        <div class="progress mt-3">
             <div class="progress-bar"
-                 style="width: {{ cause.progress_percentage }}%; background:#162e4d;">
+                 style="width: {{ cause.progress_percentage }}%;">
                 {{ cause.progress_percentage }}%
             </div>
         </div>
+
     </div>
 
     <!-- DONATION FORM -->
-    <div class="card p-4 shadow-sm">
+    <div class="donate-card mt-4">
 
-        <h4 class="mb-4 text-center">Make a Donation</h4>
+        <h4 class="text-center fw-bold mb-4">Make a Donation</h4>
 
         <form method="POST">
             {% csrf_token %}
 
-            <!-- ERROR MESSAGE -->
             {% if error %}
                 <div class="alert alert-danger text-center">
                     {{ error }}
                 </div>
             {% endif %}
 
-            <!-- AMOUNT INPUT -->
+            <!-- INPUT -->
             <div class="mb-4">
-                <label class="form-label fw-semibold">Enter Amount ($)</label>
+                <label class="form-label fw-semibold">Donation Amount ($)</label>
                 <input type="number"
                        name="amount"
                        class="form-control form-control-lg"
-                       placeholder="e.g. 50"
+                       placeholder="Enter amount (e.g. 50)"
                        required>
             </div>
 
-            <!-- SUBMIT BUTTON -->
-            <button class="btn btn-dark w-100 py-2">
+            <!-- BUTTON -->
+            <button class="btn donate-btn w-100">
                 Continue to Payment →
             </button>
 
@@ -62,23 +65,79 @@
 <!-- STYLING -->
 <style>
 
-.card {
-    border-radius: 14px;
+/* 🔹 CONTAINER */
+.donate-container{
+    max-width:900px;
+    margin:80px auto;
 }
 
-.progress {
-    border-radius: 10px;
-    overflow: hidden;
+/* 🔹 CARD STYLE (MATCH HOME UI) */
+.donate-card{
+    background:white;
+    padding:30px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
 }
 
-.btn-dark {
-    background: #162e4d;
-    border: none;
-    transition: 0.3s;
+/* 🔹 AMOUNT TEXT */
+.amount{
+    font-size:20px;
+    font-weight:700;
+    color:#162e4d;
 }
 
-.btn-dark:hover {
-    background: #0f223b;
+/* 🔹 PROGRESS BAR */
+.progress{
+    height:14px;
+    border-radius:10px;
+    background:#e5e7eb;
+    overflow:hidden;
+}
+
+.progress-bar{
+    background:#162e4d;
+    font-size:12px;
+    font-weight:600;
+}
+
+/* 🔹 INPUT */
+.form-control{
+    border-radius:10px;
+    padding:14px;
+    border:1px solid #d1d5db;
+    transition:0.3s;
+}
+
+.form-control:focus{
+    border-color:#162e4d;
+    box-shadow:0 0 0 2px rgba(22,46,77,0.15);
+}
+
+/* 🔹 BUTTON */
+.donate-btn{
+    background:#162e4d;
+    color:white;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.donate-btn:hover{
+    background:#0f223b;
+    transform:translateY(-2px);
+}
+
+/* 🔹 MOBILE */
+@media (max-width:768px){
+    .donate-container{
+        margin:40px 15px;
+    }
+
+    .donate-card{
+        padding:20px;
+    }
 }
 
 </style>
