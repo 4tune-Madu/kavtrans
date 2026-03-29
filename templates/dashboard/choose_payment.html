@@ -1,31 +1,79 @@
-{% extends "base.html" %}
+{% extends "dashboard/dashboard_base.html" %}
 {% block content %}
-<div class="container" style="max-width:600px; margin:50px auto;">
 
-    <h3>{{ cause.title }}</h3>
-    <p>Amount: ${{ amount }}</p>
+<div class="container" style="max-width:600px; margin:60px auto;">
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+    <!-- PAYMENT CARD -->
+    <div class="card shadow-sm p-4">
 
-    <form method="POST">
-        {% csrf_token %}
-
-        <div class="mb-3">
-            <label>Select Payment Method:</label><br>
-            <input type="radio" name="payment_type" value="bank" id="bank">
-            <label for="bank">💳 Bank Transfer</label><br>
-
-            <input type="radio" name="payment_type" value="crypto" id="crypto">
-            <label for="crypto">₿ Crypto</label><br>
-
-            <input type="radio" name="payment_type" value="paypal" id="paypal">
-            <label for="paypal">🅿️ PayPal</label>
+        <!-- Cause Info -->
+        <div class="text-center mb-4">
+            <h3 class="fw-bold">{{ cause.title }}</h3>
+            <p class="text-muted">Amount: <strong>${{ amount }}</strong></p>
         </div>
 
-        <button class="btn btn-dark w-100">Proceed</button>
-    </form>
+        <!-- Error Message -->
+        {% if error %}
+            <div class="alert alert-danger text-center">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Payment Form -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Select Payment Method:</label>
+
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="radio" name="payment_type" value="bank" id="bank" required>
+                    <label class="form-check-label" for="bank">💳 Bank Transfer</label>
+                </div>
+
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="radio" name="payment_type" value="crypto" id="crypto">
+                    <label class="form-check-label" for="crypto">₿ Crypto</label>
+                </div>
+
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="radio" name="payment_type" value="paypal" id="paypal">
+                    <label class="form-check-label" for="paypal">🅿️ PayPal</label>
+                </div>
+            </div>
+
+            <button class="btn btn-dark w-100 py-2 fw-semibold">
+                Proceed → 
+            </button>
+
+        </form>
+
+    </div>
 
 </div>
+
+<style>
+/* CARD STYLING */
+.card {
+    border-radius: 14px;
+}
+
+/* BUTTON */
+.btn-dark {
+    background: #162e4d;
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-dark:hover {
+    background: #0f223b;
+}
+
+/* RADIO BUTTONS */
+.form-check-label {
+    font-weight: 500;
+    cursor: pointer;
+}
+</style>
+
 {% endblock %}
