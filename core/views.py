@@ -180,6 +180,10 @@ def donate_amount(request, cause_id):
 
 
 # STEP 2: CHOOSE PAYMENT
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import DonationCause, BankAccount, CryptoWallet, PayPalAccount, Donation
+import random
+
 def choose_payment(request, cause_id):
     cause = get_object_or_404(DonationCause, id=cause_id)
     amount = request.session.get('donation_amount')
@@ -187,40 +191,65 @@ def choose_payment(request, cause_id):
     if not amount:
         return redirect('donate_amount', cause_id=cause.id)
 
-    accounts = PaymentAccount.objects.filter(is_active=True)
-
     if request.method == "POST":
         payment_type = request.POST.get("payment_type")
-
         if not payment_type:
-            return render(request, "choose_payment.html", {
+            return render(request, "dashboard/choose_payment.html", {
                 "cause": cause,
                 "amount": amount,
                 "error": "Please select a payment method"
             })
 
-        # RANDOM ACCOUNT
-        account = accounts.filter(account_type=payment_type).order_by('?').first()
-
-        if not account:
-            return render(request, "choose_payment.html", {
-                "cause": cause,
-                "amount": amount,
-                "error": "No account available for this method"
-            })
-
-        # SAVE DONATION
-        donation = Donation.objects.create(
-            cause=cause,
-            amount=amount,
-            payment_account=account
-        )
-
-        return render(request, "dashboard/donation_success.html", {
-            "donation": donation
-        })
+        # Redirect to details page with type
+        request.session['payment_type'] = payment_type
+        return redirect('payment_details', cause_id=cause.id)
 
     return render(request, "dashboard/choose_payment.html", {
         "cause": cause,
         "amount": amount
+    })
+
+def payment_details(request, cause_id):
+    cause = get_object_or_404(DonationCause, id=cause_id)
+    amount = request.session.get('donation_amount')
+    payment_type = request.session.get('payment_type')
+
+    if not amount or not payment_type:
+        return redirect('choose_payment', cause_id=cause.id)
+
+    # Pick random account depending on type
+    account = None
+    if payment_type == 'bank':
+        account = BankAccount.objects.filter(is_active=True).order_by('?').first()
+    elif payment_type == 'crypto':
+        account = CryptoWallet.objects.filter(is_active=True).order_by('?').first()
+    elif payment_type == 'paypal':
+        account = PayPalAccount.objects.filter(is_active=True).order_by('?').first()
+
+    if not account:
+        return render(request, "dashboard/payment_details.html", {
+            "cause": cause,
+            "amount": amount,
+            "error": "No active account available for this payment method"
+        })
+
+    if request.method == "POST":
+        # Save donation
+        donation = Donation.objects.create(
+            cause=cause,
+            amount=amount,
+            payment_type=payment_type,
+            payment_account=str(account)  # Can store as string or FK depending on your model
+        )
+        return render(request, "dashboard/donation_success.html", {
+            "donation": donation,
+            "account_details": account,
+            "payment_type": payment_type
+        })
+
+    return render(request, "dashboard/payment_details.html", {
+        "cause": cause,
+        "amount": amount,
+        "account": account,
+        "payment_type": payment_type
     })

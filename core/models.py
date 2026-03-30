@@ -69,3 +69,43 @@ class PaymentAccount(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.account_type})"
+
+# Bank Accounts
+class BankAccount(models.Model):
+    account_name = models.CharField(max_length=200)
+    account_number = models.CharField(max_length=50)
+    bank_name = models.CharField(max_length=100)
+    swift_code = models.CharField(max_length=50)
+    branch = models.CharField(max_length=100)
+    currency = models.CharField(max_length=10, default='USD')
+    notes = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.bank_name} - {self.account_name}"
+
+# Crypto Wallets
+class CryptoWallet(models.Model):
+    CURRENCY_CHOICES = [
+        ('BTC','Bitcoin'),
+        ('ETH','Ethereum'),
+        ('USDT','USDT'),
+        ('TRON','TRON')
+    ]
+    currency = models.CharField(max_length=10, choices=CURRENCY_CHOICES)
+    wallet_address = models.CharField(max_length=200)
+    network = models.CharField(max_length=50, blank=True)
+    notes = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.currency} - {self.wallet_address[:10]}..."
+
+# PayPal Accounts
+class PayPalAccount(models.Model):
+    email = models.EmailField()
+    notes = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.email

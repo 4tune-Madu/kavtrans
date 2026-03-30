@@ -1,0 +1,40 @@
+{% extends "dashboard/dashboard_base.html" %}
+{% block content %}
+<div class="container" style="max-width:700px; margin:50px auto;">
+
+    <h3 class="fw-bold text-center">{{ cause.title }}</h3>
+    <p class="text-center mb-4">Amount: <strong>${{ amount }}</strong></p>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <div class="card p-4 shadow-sm">
+        <h5 class="fw-bold mb-3 text-center">Payment Details ({{ payment_type|title }})</h5>
+        <ul class="list-unstyled">
+            {% if payment_type == 'bank' %}
+                <li><strong>Bank Name:</strong> {{ account.bank_name }}</li>
+                <li><strong>Account Name:</strong> {{ account.account_name }}</li>
+                <li><strong>Account Number:</strong> {{ account.account_number }}</li>
+                <li><strong>SWIFT Code:</strong> {{ account.swift_code }}</li>
+                <li><strong>Branch:</strong> {{ account.branch }}</li>
+                <li><strong>Currency:</strong> {{ account.currency }}</li>
+                {% if account.notes %}<li><strong>Notes:</strong> {{ account.notes }}</li>{% endif %}
+            {% elif payment_type == 'crypto' %}
+                <li><strong>Currency:</strong> {{ account.get_currency_display }}</li>
+                <li><strong>Wallet Address:</strong> {{ account.wallet_address }}</li>
+                <li><strong>Network:</strong> {{ account.network }}</li>
+                {% if account.notes %}<li><strong>Notes:</strong> {{ account.notes }}</li>{% endif %}
+            {% elif payment_type == 'paypal' %}
+                <li><strong>Email:</strong> {{ account.email }}</li>
+                {% if account.notes %}<li><strong>Notes:</strong> {{ account.notes }}</li>{% endif %}
+            {% endif %}
+        </ul>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-dark w-100 py-2 mt-3">Confirm Payment</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

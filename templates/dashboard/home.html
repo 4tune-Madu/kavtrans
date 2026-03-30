@@ -96,6 +96,27 @@
     color:white;
 }
 
+
+/* MOBILE FIX FOR DASHBOARD BUTTONS */
+@media (max-width: 768px) {
+
+  .dashboard-actions {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dashboard-btn {
+    width: 100%;
+    margin-right: 0;
+    text-align: center;
+  }
+
+}
+
+.dashboard-actions {
+    margin:40px 0;
+    gap:10px;
+}
 </style>
 
 <div class="container dashboard-wrapper animate__animated animate__fadeIn">
@@ -138,7 +159,7 @@ Logout
 </div>
 
 <!-- QUICK ACTIONS -->
-<div class="dashboard-actions">
+<div class="dashboard-actions d-flex flex-wrap gap-2">
 
 <a href="{% url 'package_create' %}" class="dashboard-btn">
 Create Package
