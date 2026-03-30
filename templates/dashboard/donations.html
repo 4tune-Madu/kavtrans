@@ -1,37 +1,14 @@
 {% extends "dashboard/dashboard_base.html" %}
-{% load static %}
 
 {% block content %}
 
 <style>
-/* HERO SECTION */
-.hero{
-    background: url('{% static "images/donation-hero.jpg" %}') center/cover no-repeat;
-    height: 300px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    text-align:center;
-    position:relative;
-}
-.hero::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,0.5);
-}
-.hero-content{
-    position:relative;
-    z-index:2;
-}
-
 .donation-wrapper{
     max-width:1200px;
     margin:50px auto;
 }
 
-/* HEADER */
+/* Header */
 .donation-header{
     display:flex;
     justify-content:space-between;
@@ -44,31 +21,27 @@
     font-weight:600;
 }
 
-/* STATS */
+/* Stats cards */
 .stat-card{
     background:#fff;
-    padding:25px;
+    padding:20px;
     border-radius:12px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
     text-align:center;
-    transition:0.3s;
-}
-.stat-card:hover{
-    transform:translateY(-5px);
 }
 
 .stat-number{
-    font-size:28px;
-    font-weight:700;
+    font-size:24px;
+    font-weight:600;
     color:#162e4d;
 }
 
-/* TABLE */
+/* Table */
 .table-card{
     background:#fff;
     padding:25px;
     border-radius:12px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
 .table thead{
@@ -76,7 +49,7 @@
     color:white;
 }
 
-/* BUTTON */
+/* Buttons */
 .btn-main{
     background:#162e4d;
     color:white;
@@ -85,39 +58,10 @@
     padding:10px 18px;
 }
 
-/* STORIES */
-.story-card{
-    background:#fff;
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 6px 18px rgba(0,0,0,0.08);
-    transition:0.3s;
+.btn-main:hover{
+    background:#0f223b;
 }
-.story-card:hover{
-    transform:translateY(-5px);
-}
-.story-img{
-    height:180px;
-    object-fit:cover;
-    width:100%;
-}
-.story-body{
-    padding:15px;
-}
-.story-title{
-    font-weight:600;
-    color:#162e4d;
-}
-
 </style>
-
-<!-- HERO -->
-<div class="hero">
-    <div class="hero-content">
-        <h2>Make a Difference Today</h2>
-        <p>Your donation changes lives and builds hope.</p>
-    </div>
-</div>
 
 <div class="container donation-wrapper">
 
@@ -130,7 +74,7 @@
     </a>
 </div>
 
-<!-- STATS -->
+<!-- ANALYTICS -->
 <div class="row g-4 mb-4">
 
 <div class="col-md-4">
@@ -156,11 +100,13 @@
 
 </div>
 
-<!-- TABLE -->
-<div class="table-card mb-5">
+<!-- CAUSES TABLE -->
+<div class="table-card">
+
 <h5 class="mb-3">All Donation Causes</h5>
 
 <table class="table table-hover align-middle">
+
 <thead>
 <tr>
 <th>Image</th>
@@ -173,51 +119,52 @@
 </thead>
 
 <tbody>
+
 {% for cause in causes %}
+
 <tr>
+
 <td>
 {% if cause.image %}
 <img src="{{ cause.image.url }}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
 {% endif %}
 </td>
+
 <td>{{ cause.title }}</td>
+
 <td>${{ cause.amount_raised }}</td>
+
 <td>${{ cause.target_amount }}</td>
+
 <td>
 <div class="progress" style="height:10px;">
-<div class="progress-bar" style="width: {{ cause.progress_percentage }}%; background:#162e4d;"></div>
+<div class="progress-bar" 
+style="width: {{ cause.progress_percentage }}%; background:#162e4d;">
+</div>
 </div>
 <small>{{ cause.progress_percentage }}%</small>
 </td>
+
 <td>
-<a href="{% url 'edit_donation_cause' cause.id %}" class="btn btn-sm btn-warning">Edit</a>
+<a href="{% url 'edit_donation_cause' cause.id %}" 
+class="btn btn-sm btn-warning">
+Edit
+</a>
 </td>
+
 </tr>
+
 {% empty %}
+
 <tr>
-<td colspan="6" class="text-center">No causes yetooooooo</td>
+<td colspan="6" class="text-center">No causes yet</td>
 </tr>
+
 {% endfor %}
+
 </tbody>
+
 </table>
-</div>
-
-<!-- STORIES SECTION -->
-<h4 class="mb-4">Lives We've Impacted</h4>
-
-<div class="row g-4">
-
-{% for i in "12345" %}
-<div class="col-md-4">
-<div class="story-card">
-<img src="{% static 'images/story'|add:i|add:'.jpg' %}" class="story-img">
-<div class="story-body">
-<h6 class="story-title">Hope Restored</h6>
-<p>Thanks to your donations, families received shelter, food, and medical support.</p>
-</div>
-</div>
-</div>
-{% endfor %}
 
 </div>
 

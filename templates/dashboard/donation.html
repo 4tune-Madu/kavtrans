@@ -4,241 +4,286 @@
 {% block content %}
 
 <style>
+:root{
+    --primary:#162e4d;
+    --light:#f5f7fa;
+}
+
+body{
+    background:var(--light);
+}
 
 /* HERO */
 .donation-hero{
-    background: linear-gradient(rgba(22,46,77,0.85), rgba(22,46,77,0.85)),
-                url('https://images.unsplash.com/photo-1607746882042-944635dfe10e');
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url('{% static "images/donation-hero.jpg" %}');
     background-size:cover;
     background-position:center;
     color:white;
-    padding:100px 20px;
+    padding:120px 20px;
     text-align:center;
 }
 
 .donation-hero h1{
-    font-size:40px;
+    font-size:44px;
     font-weight:700;
 }
 
 .donation-hero p{
     font-size:18px;
-    margin-top:10px;
+    max-width:700px;
+    margin:10px auto;
 }
 
-/* SECTION */
 .section{
-    padding:70px 20px;
+    padding:80px 20px;
+}
+
+.section-title{
     text-align:center;
+    margin-bottom:40px;
 }
 
-/* SLIDESHOW */
-.carousel img{
-    height:400px;
-    object-fit:cover;
-    border-radius:12px;
+.section-title h2{
+    color:var(--primary);
+    font-weight:700;
 }
 
-/* CARD */
-.donation-card{
+/* METRICS */
+.metric-box{
     background:#fff;
-    padding:30px;
+    padding:25px;
     border-radius:12px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.1);
-    max-width:500px;
-    margin:30px auto;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
 
-/* BUTTON */
-.donate-btn{
-    background:#162e4d;
-    color:white;
-    padding:12px 25px;
+.metric-box h3{
+    color:var(--primary);
+    font-weight:700;
+}
+
+/* CARDS */
+.card{
     border:none;
-    border-radius:10px;
-    font-weight:600;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.donate-btn:hover{
-    background:#0f223b;
-}
-
-/* SMALL CARD STYLE */
-.donation-card-small{
-    background:#fff;
-    padding:15px;
     border-radius:12px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.1);
-    text-align:center;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
     transition:0.3s;
-    margin:10px;
 }
 
-.donation-card-small:hover{
-    transform:translateY(-5px);
+.card:hover{
+    transform:translateY(-6px);
 }
 
-.donation-card-small img{
-    width:100%;
-    height:180px;
+.card img{
+    height:200px;
     object-fit:cover;
-    border-radius:10px;
-    margin-bottom:10px;
 }
 
-.donation-card-small h5{
-    font-weight:600;
-    color:#162e4d;
-    margin-top:10px;
+/* STORIES */
+.story-card img{
+    height:220px;
 }
 
-.donation-card-small p{
-    font-size:14px;
-    color:#555;
+/* VISUAL SECTION */
+.visual-section{
+    background: url('{% static "images/emotion.jpg" %}') center/cover no-repeat;
+    padding:100px 20px;
+    color:white;
+    text-align:center;
+    position:relative;
 }
 
-</style>
-<style>
-/* Card styling */
-.card {
-    border: 1px solid #e3e3e3;
-    border-radius: 12px;
-    transition: transform 0.3s, box-shadow 0.3s;
+.visual-section::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.6);
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+.visual-content{
+    position:relative;
+    z-index:2;
 }
 
-.card-title {
-    color: #162e4d;
-    font-weight: 600;
-}
-
-.card-text {
-    color: #555;
-    font-size: 14px;
-}
-
-.progress-bar {
-    font-size: 12px;
-    line-height: 20px;
-    color: white;
-    font-weight: 600;
-}
 </style>
 
 <!-- HERO -->
 <section class="donation-hero">
-    <h1>Making a Difference Beyond Delivery</h1>
-    <p>KAVTRANS is committed to supporting communities and changing lives.</p>
+    <h1>Together, We Change Lives</h1>
+    <p>Your support helps us deliver more than packages — we deliver hope, relief, and opportunity to those who need it most.</p>
 </section>
 
-
-<!-- ABOUT -->
+<!-- MISSION -->
 <section class="section">
-    <h2>Our Mission</h2>
-    <p>
-        At KAVTRANS Courier and Travel LLC, we believe logistics goes beyond
-        delivery — it's about connecting people and uplifting communities.
-        Through our donation programs, we support education, health, and
-        humanitarian causes.
+<div class="container text-center">
+    <h2>Our Why</h2>
+    <p style="max-width:800px;margin:auto;">
+        At KAVTRANS, we believe every delivery has the power to transform lives.
+        Our donation initiatives are focused on real impact — supporting families,
+        funding education, providing emergency relief, and restoring dignity.
     </p>
+</div>
 </section>
 
-<!-- Statistics -->
+<!-- METRICS -->
 <section class="section">
-    <div class="container">
-        <div class="row text-center g-4">
-            <div class="col-md-4">
-                <div class="donation-card-small">
-                    <h5>Total Raised</h5>
-                    <p>${{ total_raised }}</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="donation-card-small">
-                    <h5>Total Target</h5>
-                    <p>${{ total_target }}</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="donation-card-small">
-                    <h5>Total Causes</h5>
-                    <p>{{ total_causes }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container">
+<div class="row g-4 text-center">
+
+<div class="col-md-3">
+<div class="metric-box">
+<h3>${{ total_raised }}</h3>
+<p>Total Raised</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="metric-box">
+<h3>{{ total_causes }}</h3>
+<p>Active Campaigns</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="metric-box">
+<h3>500+</h3>
+<p>Lives Impacted</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="metric-box">
+<h3>15+</h3>
+<p>Communities Reached</p>
+</div>
+</div>
+
+</div>
+</div>
 </section>
 
+<!-- CAUSES -->
+<section class="section">
+<div class="container">
+<div class="section-title">
+<h2>Support Our Causes</h2>
+</div>
 
-<!-- SLIDESHOW -->
-<div class="container my-5">
-<h2 class="text-center mb-4">Support Our Causes</h2>
+<div class="row g-4">
+{% for cause in causes %}
+<div class="col-md-4">
+<div class="card h-100">
+<img src="{{ cause.image.url }}">
+<div class="card-body d-flex flex-column">
+<h5>{{ cause.title }}</h5>
+<p>{{ cause.description|truncatewords:20 }}</p>
+
+<div class="progress mb-2">
+<div class="progress-bar" style="width: {{ cause.progress_percentage }}%; background:#162e4d;">
+{{ cause.progress_percentage }}%
+</div>
+</div>
+
+<small>${{ cause.amount_raised }} of ${{ cause.target_amount }}</small>
+
+<a href="{% url 'donate_amount' cause.id %}" class="btn btn-dark mt-auto">Donate Now</a>
+
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+</div>
+</section>
+
+<!-- EMOTIONAL VISUAL -->
+<section class="visual-section">
+<div class="visual-content">
+<h2>Every Donation Tells a Story</h2>
+<p>From hunger to hope, from struggle to stability — your support makes it possible.</p>
+</div>
+</section>
+
+<!-- STORIES -->
+<section class="section">
+<div class="container">
+<div class="section-title">
+<h2>Real Stories, Real Impact</h2>
+</div>
 
 <div class="row g-4">
 
-{% for cause in causes %}
-
-<div class="col-md-6 col-lg-4">
-
-<div class="card shadow-sm h-100 border border-light rounded-3">
-
-<img src="{{ cause.image.url }}" class="card-img-top" style="height:200px; object-fit:cover; border-bottom: 1px solid #ddd;">
-
-<div class="card-body d-flex flex-column">
-
-<h5 class="card-title">{{ cause.title }}</h5>
-
-<p class="card-text">{{ cause.description|truncatewords:20 }}</p>
-
-<div class="progress mb-2" style="height: 20px; border-radius: 10px; overflow: hidden;">
-    <div class="progress-bar" role="progressbar"
-         style="width: {{ cause.progress_percentage }}%; background-color: #162e4d;"
-         aria-valuenow="{{ cause.progress_percentage }}"
-         aria-valuemin="0" aria-valuemax="100">
-        {{ cause.progress_percentage }}%
-    </div>
+<div class="col-md-4">
+<div class="card story-card">
+<img src="{% static 'images/story1.jpg' %}">
+<div class="card-body">
+<h6>From Street to School</h6>
+<p>These young boys were able to return to school after receiving full educational support.</p>
 </div>
-
-<small class="mb-3">
-${{ cause.amount_raised }} raised of ${{ cause.target_amount }}
-</small>
-
-<a href="{% url 'donate_amount' cause.id %}" class="btn btn-dark w-100">
-    Donate Now
-</a>
-
 </div>
 </div>
 
+<div class="col-md-4">
+<div class="card story-card">
+<img src="{% static 'images/story2.jpg' %}">
+<div class="card-body">
+<h6>Medical Relief</h6>
+<p>Funds raised helped cover life-saving treatment for a critically ill patient.</p>
+</div>
+</div>
 </div>
 
-{% endfor %}
+<div class="col-md-4">
+<div class="card story-card">
+<img src="{% static 'images/story3.jpg' %}">
+<div class="card-body">
+<h6>Food for Families</h6>
+<p>Over 100 families received food supplies during a difficult economic period.</p>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card story-card">
+<img src="{% static 'images/story4.jpg' %}">
+<div class="card-body">
+<h6>Small Business Revival</h6>
+<p>A struggling trader restarted his business with financial support from donations.</p>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card story-card">
+<img src="{% static 'images/story5.jpg' %}">
+<div class="card-body">
+<h6>Shelter Restored</h6>
+<p>A displaced family regained safe housing through community contributions.</p>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card story-card">
+<img src="{% static 'images/story6.jpg' %}">
+<div class="card-body">
+<h6>Hope After Disaster</h6>
+<p>A displaced family regained safe housing through community contributions.</p>
+</div>
+</div>
+</div>
 
 </div>
 </div>
-<!-- DONATION -->
-<section class="section">
-
-    <div class="donation-card">
-
-        <h3>Support Our Cause</h3>
-        <p>Your contribution helps us reach more people and make a bigger impact.</p>
-
-        <button class="donate-btn">Donate Now</button>
-
-    </div>
-
 </section>
 
-<!-- FOOTER -->
-<div class="footer">
-    <p>© 2026 KAVTRANS Courier and Travel LLC</p>
-</div>
+<!-- CTA -->
+<section class="section text-center">
+<h3>Be Part of Something Bigger</h3>
+<p>Your generosity can change someone's life today.</p>
+<button class="btn btn-dark">Donate Now</button>
+</section>
 
 {% endblock %}

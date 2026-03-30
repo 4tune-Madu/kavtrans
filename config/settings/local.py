@@ -4,7 +4,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-# LOCAL DATABASE (SQLite)
+
+# SQLITE (LOCAL DATABASE)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -12,5 +13,8 @@ DATABASES = {
     }
 }
 
-# Faster dev (optional)
+
+# Faster static handling for development
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+print("USING LOCAL SETTINGS ✅")
