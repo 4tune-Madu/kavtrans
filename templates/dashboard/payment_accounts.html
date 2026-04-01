@@ -5,13 +5,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>Payment Accounts</h3>
-        <a href="{% url 'add_payment_account' %}" class="btn btn-dark">
-            + Add Account
-        </a>
+        <a href="{% url 'add_payment_account' %}" class="btn btn-dark">+ Add Account</a>
     </div>
 
-    <table class="table table-bordered bg-white">
-        <thead>
+    <table class="table table-bordered bg-white table-hover align-middle">
+        <thead class="table-dark">
             <tr>
                 <th>Name</th>
                 <th>Type</th>
@@ -25,8 +23,8 @@
             {% for acc in accounts %}
             <tr>
                 <td>{{ acc.name }}</td>
-                <td>{{ acc.account_type }}</td>
-                <td>{{ acc.details|truncatechars:40 }}</td>
+                <td>{{ acc.account_type|title }}</td>
+                <td>{{ acc.details|truncatechars:80 }}</td>
                 <td>
                     {% if acc.is_active %}
                         <span class="badge bg-success">Active</span>
@@ -34,15 +32,9 @@
                         <span class="badge bg-secondary">Inactive</span>
                     {% endif %}
                 </td>
-
                 <td>
-                    <a href="{% url 'edit_payment_account' acc.id %}" class="btn btn-sm btn-warning">Edit</a>
-
-                    <a href="{% url 'delete_payment_account' acc.id %}"
-                       class="btn btn-sm btn-danger"
-                       onclick="return confirm('Delete this account?')">
-                       Delete
-                    </a>
+                    <a href="{% url 'edit_payment_account' acc.account_type acc.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'delete_payment_account' acc.account_type acc.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this account?')">Delete</a>
                 </td>
             </tr>
             {% empty %}
@@ -51,7 +43,6 @@
             </tr>
             {% endfor %}
         </tbody>
-
     </table>
 
 </div>

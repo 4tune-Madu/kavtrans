@@ -8,25 +8,39 @@
         <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-4">
-            <label class="fw-semibold">Select Payment Method:</label>
-            <div class="form-check">
-                <input type="radio" name="payment_type" value="bank" id="bank" class="form-check-input">
-                <label class="form-check-label" for="bank">💳 Bank Transfer</label>
-            </div>
-            <div class="form-check">
-                <input type="radio" name="payment_type" value="crypto" id="crypto" class="form-check-input">
-                <label class="form-check-label" for="crypto">₿ Crypto</label>
-            </div>
-            <div class="form-check">
-                <input type="radio" name="payment_type" value="paypal" id="paypal" class="form-check-input">
-                <label class="form-check-label" for="paypal">🅿️ PayPal</label>
-            </div>
-        </div>
+    <!-- Choose Payment Method -->
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label>Payment Method</label>
+        <select name="payment_type" id="paymentType" class="form-control">
+            <option value="">-- Select Payment --</option>
+            <option value="bank">Bank Transfer</option>
+            <option value="crypto">Crypto</option>
+            <option value="paypal">PayPal</option>
+        </select>
+    </div>
 
-        <button type="submit" class="btn btn-dark w-100 py-2 mt-3">Proceed</button>
-    </form>
+    <div id="cryptoCurrencyDiv" style="display:none;">
+        <label>Select Crypto</label>
+        <select name="crypto_currency" class="form-control">
+            <option value="BTC">Bitcoin</option>
+            <option value="ETH">Ethereum</option>
+            <option value="USDT">USDT</option>
+            <option value="TRON">TRON</option>
+        </select>
+    </div>
+
+    <button class="btn btn-dark mt-3 w-100">Continue</button>
+</form>
+
+<script>
+const paymentSelect = document.getElementById("paymentType");
+const cryptoDiv = document.getElementById("cryptoCurrencyDiv");
+
+paymentSelect.addEventListener("change", function() {
+    cryptoDiv.style.display = (this.value === "crypto") ? "block" : "none";
+});
+</script>
 </div>
 {% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.thankyou-box{
+    max-width:700px;
+    margin:80px auto;
+    background:#fff;
+    padding:50px 40px;
+    border-radius:15px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.thankyou-icon{
+    font-size:70px;
+    color:#28a745;
+    margin-bottom:20px;
+}
+
+.thankyou-title{
+    color:#162e4d;
+    font-weight:700;
+}
+
+.thankyou-text{
+    color:#555;
+    font-size:16px;
+    margin-top:15px;
+    line-height:1.7;
+}
+
+.highlight{
+    color:#162e4d;
+    font-weight:600;
+}
+
+.btn-main{
+    background:#162e4d;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:10px;
+    margin-top:25px;
+    transition:0.3s;
+}
+
+.btn-main:hover{
+    background:#0f223b;
+}
+
+.btn-outline{
+    margin-top:10px;
+}
+</style>
+
+<div class="thankyou-box">
+
+    <!-- ICON -->
+    <div class="thankyou-icon">
+        ❤️
+    </div>
+
+    <!-- TITLE -->
+    <h2 class="thankyou-title">Thank You for Your Generosity</h2>
+
+    <!-- MESSAGE -->
+    <p class="thankyou-text">
+        We sincerely appreciate your willingness to support our mission.  
+        Your donation is more than just a contribution — it is a powerful act of kindness 
+        that helps us reach individuals and communities in need.
+    </p>
+
+    <p class="thankyou-text">
+        At <span class="highlight">KAVTRANS</span>, we are deeply committed to ensuring that every donation 
+        is used <span class="highlight">transparently</span>, <span class="highlight">responsibly</span>, 
+        and for the <span class="highlight">right purpose</span>.
+    </p>
+
+    <p class="thankyou-text">
+        Your payment is currently under review. Once it has been successfully verified, 
+        we will send you a confirmation message via the email address you provided.
+    </p>
+
+    <p class="thankyou-text">
+        Thank you for believing in what we do and for being part of something meaningful.
+    </p>
+
+    <!-- BUTTONS -->
+    <a href="{% url 'donations' %}" class="btn btn-main">
+        Explore More Causes
+    </a>
+
+    <br>
+
+    <a href="/" class="btn btn-outline-dark btn-outline">
+        Return Home
+    </a>
+
+</div>
+
+{% endblock %}

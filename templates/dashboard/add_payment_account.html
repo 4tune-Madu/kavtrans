@@ -1,37 +1,86 @@
 {% extends "dashboard/dashboard_base.html" %}
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-5" style="max-width:700px;">
 
-    <h3>Add Payment Account</h3>
+    <div class="card p-4 shadow-sm">
+        <h4 class="mb-4">Add Payment Account</h4>
 
-    <form method="POST">
-        {% csrf_token %}
+        <form method="POST">
+            {% csrf_token %}
 
-        <div class="mb-3">
-            <label>Account Type</label>
-            <select name="account_type" class="form-control">
-                <option value="bank">Bank Transfer</option>
-                <option value="crypto">Crypto</option>
-                <option value="paypal">PayPal</option>
-            </select>
-        </div>
+            <!-- ACCOUNT TYPE -->
+            <div class="mb-3">
+                <label class="form-label">Account Type</label>
+                <select name="account_type" id="accountType" class="form-control">
+                    <option value="">-- Select Type --</option>
+                    <option value="bank">Bank Transfer</option>
+                    <option value="crypto">Crypto</option>
+                    <option value="paypal">PayPal</option>
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label>Account Name</label>
-            <input type="text" name="name" class="form-control" placeholder="e.g GTBank - John Doe" required>
-        </div>
+            <!-- BANK -->
+            <div id="bankFields" style="display:none;">
+                <input type="text" name="account_name" class="form-control mb-2" placeholder="Account Name">
+                <input type="text" name="account_number" class="form-control mb-2" placeholder="Account Number">
+                <input type="text" name="bank_name" class="form-control mb-2" placeholder="Bank Name">
+                <input type="text" name="swift_code" class="form-control mb-2" placeholder="SWIFT Code">
+                <input type="text" name="branch" class="form-control mb-2" placeholder="Branch">
+            </div>
 
-        <div class="mb-3">
-            <label>Details</label>
-            <textarea name="details" class="form-control" rows="4"
-                placeholder="Account number / wallet address / PayPal email" required></textarea>
-        </div>
+            <!-- CRYPTO -->
+            <div id="cryptoFields" style="display:none;">
+                <select name="currency" class="form-control mb-2">
+                    <option value="BTC">Bitcoin</option>
+                    <option value="ETH">Ethereum</option>
+                    <option value="USDT">USDT</option>
+                    <option value="TRON">TRON</option>
+                </select>
+                <input type="text" name="wallet_address" class="form-control mb-2" placeholder="Wallet Address">
+                <input type="text" name="network" class="form-control mb-2" placeholder="Network (optional)">
+            </div>
 
-        <button class="btn btn-dark">Save Account</button>
+            <!-- PAYPAL -->
+            <div id="paypalFields" style="display:none;">
+                <input type="email" name="email" class="form-control mb-2" placeholder="PayPal Email">
+            </div>
 
-    </form>
+            <div class="form-check mb-3">
+                <input type="checkbox" name="is_active" class="form-check-input" checked>
+                <label class="form-check-label">Active</label>
+            </div>
+
+            <button class="btn btn-dark mt-3 w-100">Save Account</button>
+
+        </form>
+    </div>
 
 </div>
+
+<!-- SCRIPT -->
+<script>
+const typeSelect = document.getElementById("accountType");
+const bankFields = document.getElementById("bankFields");
+const cryptoFields = document.getElementById("cryptoFields");
+const paypalFields = document.getElementById("paypalFields");
+
+function toggleFields(value) {
+    bankFields.style.display = "none";
+    cryptoFields.style.display = "none";
+    paypalFields.style.display = "none";
+
+    if (value === "bank") bankFields.style.display = "block";
+    else if (value === "crypto") cryptoFields.style.display = "block";
+    else if (value === "paypal") paypalFields.style.display = "block";
+}
+
+// Initialize on load (in case you want to preselect)
+toggleFields(typeSelect.value);
+
+typeSelect.addEventListener("change", function() {
+    toggleFields(this.value);
+});
+</script>
 
 {% endblock %}

@@ -24,31 +24,24 @@ class DonationCause(models.Model):
 
 
 
+from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
 class Donation(models.Model):
-    cause = models.ForeignKey('DonationCause', on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    cause = models.ForeignKey(DonationCause, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_type = models.CharField(max_length=20)
 
-    payment_account = models.ForeignKey('PaymentAccount', on_delete=models.SET_NULL, null=True)
-
-    donor_name = models.CharField(max_length=255, blank=True, null=True)
-    donor_email = models.EmailField(blank=True, null=True)
-
-    proof = models.ImageField(upload_to='donation_proofs/', blank=True, null=True)
-
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ('pending', 'Pending'),
-            ('verified', 'Verified'),
-            ('rejected', 'Rejected')
-        ],
-        default='pending'
-    )
+    # Generic relation to any account type
+    payment_account_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    payment_account_id = models.PositiveIntegerField()
+    payment_account = GenericForeignKey('payment_account_type', 'payment_account_id')
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.donor_name} - {self.amount}"
+        return f"{self.cause.title} - {self.amount} via {self.payment_type}"
 
 import random
 

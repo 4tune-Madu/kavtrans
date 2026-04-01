@@ -250,7 +250,7 @@ body{
 <img src="{% static 'images/story4.jpg' %}">
 <div class="card-body">
 <h6>Small Business Revival</h6>
-<p>A struggling trader restarted his business with financial support from donations.</p>
+<p>A struggling trader restarted her business with financial support from donations.</p>
 </div>
 </div>
 </div>
@@ -283,7 +283,9 @@ body{
 <section class="section text-center">
 <h3>Be Part of Something Bigger</h3>
 <p>Your generosity can change someone's life today.</p>
-<button class="btn btn-dark">Donate Now</button>
+<a href="{% url 'causes_page' %}" class="btn btn-dark">
+    Donate Now
+</a>
 </section>
 
 {% endblock %}

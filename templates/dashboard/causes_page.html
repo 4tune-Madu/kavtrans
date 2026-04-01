@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+:root{
+    --primary:#162e4d;
+    --light:#f5f7fa;
+}
+
+body{
+    background:var(--light);
+}
+
+/* HERO */
+.causes-hero{
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url('{% static "images/causes-hero.jpg" %}');
+    background-size:cover;
+    background-position:center;
+    color:white;
+    padding:120px 20px;
+    text-align:center;
+}
+
+.causes-hero h1{
+    font-size:42px;
+    font-weight:700;
+}
+
+.causes-hero p{
+    max-width:700px;
+    margin:auto;
+    font-size:18px;
+}
+
+.section{
+    padding:80px 20px;
+}
+
+/* CARD */
+.cause-card{
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    transition:0.3s;
+    height:100%;
+}
+
+.cause-card:hover{
+    transform:translateY(-6px);
+}
+
+.cause-img{
+    height:220px;
+    object-fit:cover;
+    width:100%;
+}
+
+.cause-body{
+    padding:20px;
+}
+
+.cause-title{
+    font-weight:600;
+    color:var(--primary);
+}
+
+.progress{
+    height:10px;
+    border-radius:10px;
+}
+
+.progress-bar{
+    background:var(--primary);
+}
+
+.btn-donate{
+    background:var(--primary);
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px;
+    width:100%;
+}
+
+.btn-donate:hover{
+    background:#0f223b;
+}
+
+</style>
+
+<!-- HERO -->
+<section class="causes-hero">
+    <h1>Support a Cause</h1>
+    <p>Every cause you support brings hope, relief, and transformation to someone in need.</p>
+</section>
+
+<!-- CAUSES LIST -->
+<section class="section">
+<div class="container">
+
+<div class="row g-4">
+
+{% for cause in causes %}
+
+<div class="col-md-6 col-lg-4">
+
+<div class="cause-card">
+
+<img src="{{ cause.image.url }}" class="cause-img">
+
+<div class="cause-body d-flex flex-column">
+
+<h5 class="cause-title">{{ cause.title }}</h5>
+
+<p>{{ cause.description|truncatewords:25 }}</p>
+
+<div class="progress mb-2">
+<div class="progress-bar" style="width: {{ cause.progress_percentage }}%;">
+</div>
+</div>
+
+<small class="mb-3">
+${{ cause.amount_raised }} raised of ${{ cause.target_amount }}
+</small>
+
+<a href="{% url 'donate_amount' cause.id %}" class="btn btn-donate mt-auto">
+Donate to this Cause
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+</section>
+
+{% endblock %}

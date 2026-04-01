@@ -200,8 +200,20 @@ def choose_payment(request, cause_id):
                 "error": "Please select a payment method"
             })
 
-        # Redirect to details page with type
+        # Save payment type in session
         request.session['payment_type'] = payment_type
+
+        # If crypto, also save the selected currency
+        if payment_type == 'crypto':
+            crypto_currency = request.POST.get("crypto_currency")
+            if not crypto_currency:
+                return render(request, "dashboard/choose_payment.html", {
+                    "cause": cause,
+                    "amount": amount,
+                    "error": "Please select a crypto currency"
+                })
+            request.session['crypto_currency'] = crypto_currency
+
         return redirect('payment_details', cause_id=cause.id)
 
     return render(request, "dashboard/choose_payment.html", {
@@ -209,20 +221,26 @@ def choose_payment(request, cause_id):
         "amount": amount
     })
 
+from django.contrib.contenttypes.models import ContentType
+
 def payment_details(request, cause_id):
     cause = get_object_or_404(DonationCause, id=cause_id)
     amount = request.session.get('donation_amount')
     payment_type = request.session.get('payment_type')
+    crypto_currency = request.session.get('crypto_currency', None)
 
     if not amount or not payment_type:
         return redirect('choose_payment', cause_id=cause.id)
 
-    # Pick random account depending on type
+    # Select random account based on type (and currency for crypto)
     account = None
     if payment_type == 'bank':
         account = BankAccount.objects.filter(is_active=True).order_by('?').first()
     elif payment_type == 'crypto':
-        account = CryptoWallet.objects.filter(is_active=True).order_by('?').first()
+        qs = CryptoWallet.objects.filter(is_active=True)
+        if crypto_currency:
+            qs = qs.filter(currency=crypto_currency)
+        account = qs.order_by('?').first()
     elif payment_type == 'paypal':
         account = PayPalAccount.objects.filter(is_active=True).order_by('?').first()
 
@@ -234,12 +252,12 @@ def payment_details(request, cause_id):
         })
 
     if request.method == "POST":
-        # Save donation
         donation = Donation.objects.create(
             cause=cause,
             amount=amount,
             payment_type=payment_type,
-            payment_account=str(account)  # Can store as string or FK depending on your model
+            payment_account_type=ContentType.objects.get_for_model(account),
+            payment_account_id=account.id
         )
         return render(request, "dashboard/donation_success.html", {
             "donation": donation,
@@ -253,3 +271,27 @@ def payment_details(request, cause_id):
         "account": account,
         "payment_type": payment_type
     })
+
+def causes_page(request):
+    causes = DonationCause.objects.all()
+
+    context = {
+        'causes': causes
+    }
+    return render(request, 'dashboard/causes_page.html', context)
+
+def donor_details(request, donation_id):
+    donation = get_object_or_404(Donation, id=donation_id)
+
+    if request.method == "POST":
+        donation.donor_name = request.POST.get("name")
+        donation.donor_email = request.POST.get("email")
+        donation.note = request.POST.get("note")
+        donation.save()
+
+        return redirect("donation_thank_you")
+
+    return render(request, "dashboard/donor_details.html", {"donation": donation})
+
+def donation_thank_you(request):
+    return render(request, "dashboard/donation_thank_you.html")

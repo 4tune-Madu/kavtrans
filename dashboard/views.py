@@ -162,63 +162,93 @@ def donate_to_cause(request, cause_id):
     })
 
 
-# dashboard/views.py
-
-from core.models import PaymentAccount
-from django.shortcuts import render, redirect
-
-def payment_accounts(request):
-
-    accounts = PaymentAccount.objects.all()
-
-    if request.method == "POST":
-        account_type = request.POST.get("account_type")
-        name = request.POST.get("name")
-        details = request.POST.get("details")
-
-        PaymentAccount.objects.create(
-            account_type=account_type,
-            name=name,
-            details=details
-        )
-
-        return redirect("payment_accounts")
-
-    return render(request, "dashboard/payment_accounts.html", {
-        "accounts": accounts
-    })
-
-def delete_payment_account(request, id):
-    account = PaymentAccount.objects.get(id=id)
-    account.delete()
-    return redirect("payment_accounts")
-
-
-
-#Admin ACC payments
-from core.models import PaymentAccount
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from core.models import BankAccount, CryptoWallet, PayPalAccount
+
+# Admin: List all payment accounts
+# dashboard/views.py
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from core.models import BankAccount, CryptoWallet, PayPalAccount
 
 @login_required(login_url="admin_login")
 def payment_accounts(request):
-    accounts = PaymentAccount.objects.all().order_by("-id")
+    # Fetch all active and inactive accounts
+    bank_accounts = BankAccount.objects.all()
+    crypto_accounts = CryptoWallet.objects.all()
+    paypal_accounts = PayPalAccount.objects.all()
+
+    # Combine into a single list for the template
+    accounts = []
+
+    for acc in bank_accounts:
+        accounts.append({
+            "id": acc.id,
+            "name": f"{acc.bank_name} - {acc.account_name}",
+            "account_type": "bank",
+            "details": f"Account: {acc.account_number} | Branch: {acc.branch} | SWIFT: {acc.swift_code}",
+            "is_active": acc.is_active
+        })
+
+    for acc in crypto_accounts:
+        accounts.append({
+            "id": acc.id,
+            "name": acc.currency,
+            "account_type": "crypto",
+            "details": f"Wallet: {acc.wallet_address} | Network: {acc.network or 'N/A'}",
+            "is_active": acc.is_active
+        })
+
+    for acc in paypal_accounts:
+        accounts.append({
+            "id": acc.id,
+            "name": acc.email,
+            "account_type": "paypal",
+            "details": f"PayPal Email: {acc.email}",
+            "is_active": acc.is_active
+        })
+
+    # Sort by newest first
+    accounts.sort(key=lambda x: x["id"], reverse=True)
+
     return render(request, "dashboard/payment_accounts.html", {"accounts": accounts})
 
 
+# Admin: Add payment account
 @login_required(login_url="admin_login")
 def add_payment_account(request):
     if request.method == "POST":
         account_type = request.POST.get("account_type")
-        name = request.POST.get("name")
-        details = request.POST.get("details")
 
-        PaymentAccount.objects.create(
-            account_type=account_type,
-            name=name,
-            details=details
-        )
+        if account_type == "bank":
+            BankAccount.objects.create(
+                account_name=request.POST.get("account_name"),
+                account_number=request.POST.get("account_number"),
+                bank_name=request.POST.get("bank_name"),
+                swift_code=request.POST.get("swift_code"),
+                branch=request.POST.get("branch"),
+                currency=request.POST.get("currency", "USD"),
+                notes=request.POST.get("notes", ""),
+                is_active=request.POST.get("is_active") == "on"
+            )
+
+        elif account_type == "crypto":
+            CryptoWallet.objects.create(
+                currency=request.POST.get("currency"),
+                wallet_address=request.POST.get("wallet_address"),
+                network=request.POST.get("network", ""),
+                notes=request.POST.get("notes", ""),
+                is_active=request.POST.get("is_active") == "on"
+            )
+
+        elif account_type == "paypal":
+            PayPalAccount.objects.create(
+                email=request.POST.get("email"),
+                notes=request.POST.get("notes", ""),
+                is_active=request.POST.get("is_active") == "on"
+            )
 
         messages.success(request, "Payment account added successfully.")
         return redirect("payment_accounts")
@@ -226,27 +256,60 @@ def add_payment_account(request):
     return render(request, "dashboard/add_payment_account.html")
 
 
+# Admin: Edit payment account
+from django.shortcuts import get_object_or_404, redirect, render
+from core.models import BankAccount, CryptoWallet, PayPalAccount
+from django.contrib import messages
+
+MODEL_MAP = {
+    "bank": BankAccount,
+    "crypto": CryptoWallet,
+    "paypal": PayPalAccount
+}
+
+
+
 @login_required(login_url="admin_login")
-def edit_payment_account(request, id):
-    account = get_object_or_404(PaymentAccount, id=id)
+def edit_payment_account(request, account_type, id):
+    # Get model class
+    Model = MODEL_MAP.get(account_type)
+    if not Model:
+        messages.error(request, "Invalid account type.")
+        return redirect("payment_accounts")
+
+    account = get_object_or_404(Model, id=id)
 
     if request.method == "POST":
-        account.account_type = request.POST.get("account_type")
-        account.name = request.POST.get("name")
-        account.details = request.POST.get("details")
+        # Update fields dynamically
+        if account_type == "bank":
+            account.account_name = request.POST.get("account_name")
+            account.account_number = request.POST.get("account_number")
+            account.bank_name = request.POST.get("bank_name")
+            account.swift_code = request.POST.get("swift_code")
+            account.branch = request.POST.get("branch")
+        elif account_type == "crypto":
+            account.currency = request.POST.get("currency")
+            account.wallet_address = request.POST.get("wallet_address")
+            account.network = request.POST.get("network")
+        elif account_type == "paypal":
+            account.email = request.POST.get("email")
+
         account.is_active = request.POST.get("is_active") == "on"
         account.save()
-
         messages.success(request, "Payment account updated.")
         return redirect("payment_accounts")
 
-    return render(request, "dashboard/edit_payment_account.html", {"account": account})
+    # Pass account_type separately for template logic
+    return render(request, "dashboard/edit_payment_account.html", {
+        "account": account,
+        "account_type": account_type
+    })
 
 
-@login_required(login_url="admin_login")
-def delete_payment_account(request, id):
-    account = get_object_or_404(PaymentAccount, id=id)
+def delete_payment_account(request, account_type, id):
+    Model = MODEL_MAP.get(account_type)
+    account = get_object_or_404(Model, id=id)
     account.delete()
-
     messages.success(request, "Payment account deleted.")
     return redirect("payment_accounts")
+

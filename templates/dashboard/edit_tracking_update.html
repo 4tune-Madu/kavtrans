@@ -1,32 +1,114 @@
 {% extends "dashboard/dashboard_base.html" %}
-
 {% block content %}
-<div class="container mt-5">
-    <h3>Edit Tracking Update</h3>
 
-    <form method="POST" class="mt-3">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label>Location</label>
-            <input type="text" name="location" value="{{ update.location }}" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Status</label>
-            <select name="status" class="form-select" required>
-                <option value="pending" {% if update.status == "pending" %}selected{% endif %}>Pending</option>
-                <option value="picked_up" {% if update.status == "picked_up" %}selected{% endif %}>Picked Up</option>
-                <option value="in_transit" {% if update.status == "in_transit" %}selected{% endif %}>In Transit</option>
-                <option value="arrived_facility" {% if update.status == "arrived_facility" %}selected{% endif %}>Arrived At Facility</option>
-                <option value="out_for_delivery" {% if update.status == "out_for_delivery" %}selected{% endif %}>Out For Delivery</option>
-                <option value="delivered" {% if update.status == "delivered" %}selected{% endif %}>Delivered</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label>Note (Optional)</label>
-            <textarea name="note" class="form-control">{{ update.note }}</textarea>
-        </div>
-        <button type="submit" class="btn btn-success">Save Changes</button>
-        <a href="{% url 'tracking_updates' update.package.tracking_number %}" class="btn btn-secondary">Cancel</a>
-    </form>
+<div class="container mt-5" style="max-width:700px;">
+
+    <div class="card p-4 shadow-sm">
+        <h4 class="mb-4">Edit Payment Account</h4>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- ACCOUNT TYPE -->
+            <div class="mb-3">
+                <label class="form-label">Account Type</label>
+                <select name="account_type" id="accountType" class="form-control">
+                    <option value="bank" {% if account_type == "bank" %}selected{% endif %}>Bank</option>
+                    <option value="crypto" {% if account_type == "crypto" %}selected{% endif %}>Crypto</option>
+                    <option value="paypal" {% if account_type == "paypal" %}selected{% endif %}>PayPal</option>
+                </select>
+            </div>
+
+            <!-- BANK -->
+            <div id="bankFields">
+                <input type="text" name="account_name" class="form-control mb-2"
+                       placeholder="Account Name"
+                       value="{{ account.account_name|default:'' }}">
+
+                <input type="text" name="account_number" class="form-control mb-2"
+                       placeholder="Account Number"
+                       value="{{ account.account_number|default:'' }}">
+
+                <input type="text" name="bank_name" class="form-control mb-2"
+                       placeholder="Bank Name"
+                       value="{{ account.bank_name|default:'' }}">
+
+                <input type="text" name="swift_code" class="form-control mb-2"
+                       placeholder="SWIFT Code"
+                       value="{{ account.swift_code|default:'' }}">
+
+                <input type="text" name="branch" class="form-control mb-2"
+                       placeholder="Branch"
+                       value="{{ account.branch|default:'' }}">
+            </div>
+
+            <!-- CRYPTO -->
+            <div id="cryptoFields">
+                <select name="currency" class="form-control mb-2">
+                    <option value="BTC" {% if account.currency == "BTC" %}selected{% endif %}>Bitcoin</option>
+                    <option value="ETH" {% if account.currency == "ETH" %}selected{% endif %}>Ethereum</option>
+                    <option value="USDT" {% if account.currency == "USDT" %}selected{% endif %}>USDT</option>
+                    <option value="TRON" {% if account.currency == "TRON" %}selected{% endif %}>TRON</option>
+                </select>
+
+                <input type="text" name="wallet_address" class="form-control mb-2"
+                       placeholder="Wallet Address"
+                       value="{{ account.wallet_address|default:'' }}">
+
+                <input type="text" name="network" class="form-control mb-2"
+                       placeholder="Network"
+                       value="{{ account.network|default:'' }}">
+            </div>
+
+            <!-- PAYPAL -->
+            <div id="paypalFields">
+                <input type="email" name="email" class="form-control mb-2"
+                       placeholder="PayPal Email"
+                       value="{{ account.email|default:'' }}">
+            </div>
+
+            <!-- ACTIVE -->
+            <div class="form-check mb-3">
+                <input type="checkbox" name="is_active" class="form-check-input"
+                       {% if account.is_active %}checked{% endif %}>
+                <label class="form-check-label">Active</label>
+            </div>
+
+            <button class="btn btn-dark w-100">Update Account</button>
+
+        </form>
+    </div>
+
 </div>
+
+<!-- SCRIPT -->
+<script>
+const typeSelect = document.getElementById("accountType");
+const bankFields = document.getElementById("bankFields");
+const cryptoFields = document.getElementById("cryptoFields");
+const paypalFields = document.getElementById("paypalFields");
+
+function toggleFields() {
+    const value = typeSelect.value;
+
+    bankFields.style.display = "none";
+    cryptoFields.style.display = "none";
+    paypalFields.style.display = "none";
+
+    if (value === "bank") {
+        bankFields.style.display = "block";
+    } else if (value === "crypto") {
+        cryptoFields.style.display = "block";
+    } else if (value === "paypal") {
+        paypalFields.style.display = "block";
+    }
+}
+
+// Run on load (IMPORTANT)
+toggleFields();
+
+// Run on change
+typeSelect.addEventListener("change", toggleFields);
+</script>
+
 {% endblock %}

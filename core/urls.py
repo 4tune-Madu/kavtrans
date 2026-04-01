@@ -12,4 +12,11 @@ urlpatterns = [
 
     path("donate/<int:cause_id>/", views.donate_amount, name="donate_amount"),
     path("donate/<int:cause_id>/payment/", views.choose_payment, name="choose_payment"),
+
+    path('donate/<int:cause_id>/payment/details/', views.payment_details, name='payment_details'),
+
+    path('causes/', views.causes_page, name='causes_page'),
+
+    path("donation/<int:donation_id>/details/", views.donor_details, name="donor_details"),
+    path("donation/thank-you/", views.donation_thank_you, name="donation_thank_you"),
 ]

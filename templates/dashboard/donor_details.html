@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.form-box{
+    max-width:600px;
+    margin:60px auto;
+    background:#fff;
+    padding:40px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+</style>
+
+<div class="form-box">
+
+    <h4 class="mb-3">Donation Details (Optional)</h4>
+
+    <p class="text-muted">
+        Providing your details helps us acknowledge your generosity and send confirmation updates.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Your Name</label>
+            <input type="text" name="name" class="form-control" placeholder="Optional">
+        </div>
+
+        <div class="mb-3">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="Optional">
+        </div>
+
+        <div class="mb-3">
+            <label>Reason / Message</label>
+            <textarea name="note" class="form-control" rows="4"
+                placeholder="Why are you donating? (optional)"></textarea>
+        </div>
+
+        <button class="btn btn-dark w-100">Submit Details</button>
+
+    </form>
+
+</div>
+
+{% endblock %}
