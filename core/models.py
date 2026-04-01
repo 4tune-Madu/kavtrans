@@ -4,11 +4,12 @@ from django.db import models
 #Donation cause
 
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 class DonationCause(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
-    image = models.ImageField(upload_to='donations/')
+    image = CloudinaryField('image', blank=True, null=True)  # <- use CloudinaryField
     target_amount = models.DecimalField(max_digits=10, decimal_places=2)
     amount_raised = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_active = models.BooleanField(default=True)
@@ -32,6 +33,10 @@ class Donation(models.Model):
     cause = models.ForeignKey(DonationCause, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     payment_type = models.CharField(max_length=20)
+
+    donor_name = models.CharField(max_length=255, blank=True, null=True)
+    donor_email = models.EmailField(blank=True, null=True)
+    note = models.TextField(blank=True, null=True)
 
     # Generic relation to any account type
     payment_account_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
