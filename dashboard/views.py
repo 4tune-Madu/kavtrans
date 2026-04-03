@@ -132,24 +132,7 @@ def package_detail(request, package_id):
 
 from core.models import DonationCause
 
-# dashboard/views.py
-from core.models import DonationCause
-from django.db.models import Sum
 
-def donations(request):
-    causes = DonationCause.objects.filter(is_active=True)
-    total_raised = DonationCause.objects.aggregate(total=Sum('amount_raised'))['total'] or 0
-    total_target = DonationCause.objects.aggregate(total=Sum('target_amount'))['total'] or 0
-    total_causes = causes.count()
-
-    context = {
-        "causes": causes,
-        "total_raised": total_raised,
-        "total_target": total_target,
-        "total_causes": total_causes,
-    }
-
-    return render(request, "dashboard/donation.html", context)
 
 from django.shortcuts import render, get_object_or_404
 from core.models import DonationCause

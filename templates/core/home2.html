@@ -1,0 +1,945 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════════
+     COMBINED PAGE STYLES
+═══════════════════════════════════════════════════════════ -->
+<style>
+
+/* ── PAGE SECTIONS ─────────────────────────────────────────── */
+.page-section {
+    display: none;
+}
+.page-section.active {
+    display: block;
+}
+
+/* ── HERO WRAPPER (shared) ──────────────────────────────────── */
+.hero-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    position: relative;
+}
+
+/* ── LOGISTICS HERO ─────────────────────────────────────────── */
+#hero-logistics {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)),
+                url('{% static "images/hero-bg.jpg" %}') center/cover no-repeat;
+    position: relative;
+    padding-bottom: 100px; /* space for toggle */
+}
+
+/* ── DONATION HERO ──────────────────────────────────────────── */
+#hero-donation {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(0,0,0,0.62), rgba(0,0,0,0.62)),
+                url('{% static "images/donation-hero.jpg" %}') center/cover no-repeat;
+    color: white;
+    text-align: center;
+    position: relative;
+    padding-bottom: 100px; /* space for toggle */
+}
+
+#hero-donation h1 {
+    font-size: 44px;
+    font-weight: 700;
+}
+
+#hero-donation p {
+    font-size: 18px;
+    max-width: 700px;
+    margin: 10px auto 0;
+}
+
+/* ── TOGGLE PILL ────────────────────────────────────────────── */
+.hero-toggle-bar {
+    position: absolute;
+    bottom: 38px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 60px;
+    padding: 6px 8px;
+    gap: 6px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    user-select: none;
+}
+
+.toggle-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: rgba(255,255,255,0.75);
+    padding: 0 10px;
+    transition: color 0.3s;
+    white-space: nowrap;
+}
+
+.toggle-label.active-label {
+    color: #fff;
+}
+
+/* The actual switch */
+.toggle-switch-wrap {
+    position: relative;
+    width: 54px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.toggle-switch-wrap input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: background 0.35s ease;
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+}
+
+.toggle-switch-wrap input:checked ~ .toggle-track {
+    background: #ff6b00;
+    border-color: #ff6b00;
+}
+
+.toggle-switch-wrap input:checked ~ .toggle-thumb {
+    transform: translateX(26px);
+}
+
+/* ── DONATION SECTION INTERNALS ─────────────────────────────── */
+:root {
+    --don-primary: #162e4d;
+    --don-light: #f5f7fa;
+}
+
+/* Mission */
+.donation-mission {
+    padding: 80px 20px;
+}
+
+/* Metrics */
+.donation-metrics {
+    padding: 0 20px 80px;
+}
+
+.metric-box {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.metric-box h3 {
+    color: var(--don-primary);
+    font-weight: 700;
+}
+
+/* Causes */
+.donation-causes {
+    padding: 80px 20px;
+    background: var(--don-light);
+}
+
+.donation-causes .card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.donation-causes .card:hover {
+    transform: translateY(-6px);
+}
+
+.donation-causes .card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Emotional visual */
+.visual-section {
+    background: url('{% static "images/emotion.jpg" %}') center/cover no-repeat;
+    padding: 100px 20px;
+    color: white;
+    text-align: center;
+    position: relative;
+}
+
+.visual-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+}
+
+.visual-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* Stories */
+.donation-stories {
+    padding: 80px 20px;
+}
+
+.story-card img {
+    height: 220px;
+    object-fit: cover;
+}
+
+.story-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.story-card:hover {
+    transform: translateY(-6px);
+}
+
+.donation-cta {
+    padding: 80px 20px;
+    background: var(--don-light);
+}
+
+/* Section title */
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title h2 {
+    color: var(--don-primary);
+    font-weight: 700;
+}
+
+/* ── LOGISTICS SECTIONS (unchanged) ─────────────────────────── */
+.services h5 {
+    font-weight: 600;
+}
+
+.services .col-md-4 {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: 0.3s;
+}
+
+.services .col-md-4:hover {
+    transform: translateY(-5px);
+}
+
+.timeline {
+    list-style: none;
+    padding-left: 20px;
+    border-left: 2px solid #ddd;
+}
+
+.timeline li {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.timeline .dot {
+    width: 10px;
+    height: 10px;
+    background: #ff6b00;
+    border-radius: 50%;
+    position: absolute;
+    left: -6px;
+    top: 5px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-btn:hover {
+    color: #ff6b00;
+    transform: scale(1.2);
+}
+
+.track-result {
+    border-left: 5px solid #ff6b00;
+}
+
+/* Stats */
+.stats-section {
+    background: #f8fafc;
+}
+
+.stat-card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    min-width: 220px;
+    flex-shrink: 0;
+}
+
+.stat-card i {
+    font-size: 30px;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.stat-card h3 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.stat-card p {
+    color: #555;
+}
+
+.stat-card:hover {
+    transform: scale(1.05);
+}
+
+.stats-scroll-wrapper {
+    overflow-x: hidden;
+    position: relative;
+}
+
+.stats-scroll {
+    display: flex;
+    gap: 30px;
+    animation: statsScroll 30s linear infinite;
+}
+
+.stats-scroll-wrapper:hover .stats-scroll {
+    animation-play-state: paused;
+}
+
+.stats-scroll-wrapper::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    z-index: 2;
+    background: linear-gradient(to right, #f8fafc, transparent);
+}
+
+.stats-scroll-wrapper::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    z-index: 2;
+    background: linear-gradient(to left, #f8fafc, transparent);
+}
+
+@keyframes statsScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* Scroll services */
+.scroll-services {
+    background: #fff;
+}
+
+.scroll-wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.scroll-left {
+    position: sticky;
+    top: 100px;
+    flex: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.scroll-right {
+    flex: 1;
+}
+
+.service-card {
+    background: #fff;
+    margin-bottom: 40px;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.service-card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ── TRANSITION ANIMATION ────────────────────────────────────── */
+.page-section {
+    animation: fadeIn 0.45s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .scroll-wrapper {
+        flex-direction: column;
+    }
+    .scroll-left {
+        position: relative;
+        height: auto;
+        top: unset;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .toggle-label {
+        font-size: 11px;
+        padding: 0 6px;
+    }
+    #hero-donation h1 {
+        font-size: 30px;
+    }
+}
+
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOGISTICS PAGE SECTION
+═══════════════════════════════════════════════════════════ -->
+<div id="section-logistics" class="page-section active">
+
+    <!-- HERO -->
+    <section id="hero-logistics">
+        <div class="container text-white w-100">
+            <div class="row align-items-center">
+
+                <!-- LEFT CONTENT -->
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold">Smart Logistics for a Moving World</h1>
+                    <p class="lead mt-3">
+                        Reliable delivery, real-time tracking, and global logistics solutions.
+                    </p>
+                    <div class="mt-4 d-flex flex-wrap gap-4 small">
+                        <div><strong>Fast &amp; reliable global courier services</strong></div>
+                        <div><strong>Contact:</strong> support@kavtrans.com</div>
+                    </div>
+                </div>
+
+                <!-- RIGHT TRACK BOX -->
+                <div class="col-lg-6">
+                    <div class="track-box">
+                        <form method="GET" class="track-form d-flex">
+                            <input type="text" name="tracking_number" placeholder="Enter Tracking Number" required>
+                            <button type="submit" id="trackBtn">
+                                <span id="btnText">Track Package</span>
+                                <span id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── TOGGLE PILL ── -->
+        <div class="hero-toggle-bar">
+            <div class="toggle-pill">
+                <span class="toggle-label active-label" id="label-logistics">🚚 Logistics & Tracking</span>
+
+                <label class="toggle-switch-wrap">
+                    <input type="checkbox" id="pageToggle">
+                    <span class="toggle-track"></span>
+                    <span class="toggle-thumb"></span>
+                </label>
+
+                <span class="toggle-label" id="label-donation">💛 Donations</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRACKING RESULT -->
+    <div class="container">
+        {% if tracking_result %}
+            {% if tracking_result == "not_found" %}
+                <div class="alert alert-danger mt-4 text-center">
+                    Tracking number not found.
+                </div>
+            {% else %}
+                <div id="tracking-card" class="track-result card shadow-lg mt-5 p-4 position-relative">
+                    <button class="close-btn" onclick="this.parentElement.style.opacity='0'; setTimeout(()=>this.parentElement.style.display='none',300)">&times;</button>
+                    <h4 class="mb-4 fw-bold text-primary">Tracking Information</h4>
+
+                    <div class="row g-3">
+                        <div class="col-md-4"><div class="p-3 bg-light rounded">
+                            <small>Tracking Number</small>
+                            <div class="fw-bold">{{ tracking_result.tracking_number }}</div>
+                        </div></div>
+                        <div class="col-md-4"><div class="p-3 bg-light rounded">
+                            <small>Receiver</small>
+                            <div class="fw-bold">{{ tracking_result.receiver_name }}</div>
+                        </div></div>
+                        <div class="col-md-4"><div class="p-3 bg-light rounded">
+                            <small>Status</small>
+                            <div><span class="badge bg-success">{{ tracking_result.status }}</span></div>
+                        </div></div>
+                        <div class="col-md-4"><div class="p-3 bg-light rounded">
+                            <small>Location</small>
+                            <div class="fw-bold">{{ tracking_result.current_location }}</div>
+                        </div></div>
+                        <div class="col-md-4"><div class="p-3 bg-light rounded">
+                            <small>Weight</small>
+                            <div class="fw-bold">{{ tracking_result.weight }} kg</div>
+                        </div></div>
+                        <div class="col-md-4"><div class="p-3 bg-light rounded">
+                            <small>Description</small>
+                            <div class="fw-bold">{{ tracking_result.description }}</div>
+                        </div></div>
+                    </div>
+
+                    {% if latest_update and latest_update.latitude and latest_update.longitude %}
+                    <div class="mt-4">
+                        <h5 class="fw-bold">Live Location</h5>
+                        <div class="card p-2 shadow-sm" style="max-width:400px;">
+                            <div id="map" style="height:250px;"></div>
+                        </div>
+                    </div>
+                    <script>
+                        var lat = {{ latest_update.latitude }};
+                        var lng = {{ latest_update.longitude }};
+                        var locationName = "{{ latest_update.location|escapejs }}";
+                        var map = L.map('map', { zoomControl:false, dragging:false, scrollWheelZoom:false }).setView([lat, lng], 12);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap' }).addTo(map);
+                        L.marker([lat, lng]).addTo(map).bindPopup(locationName).openPopup();
+                    </script>
+                    {% endif %}
+
+                    {% if tracking_result.tracking_updates.all %}
+                    <div class="mt-5">
+                        <h5 class="fw-bold">Shipment Timeline</h5>
+                        <ul class="timeline">
+                            {% for update in tracking_result.tracking_updates.all %}
+                            <li>
+                                <span class="dot"></span>
+                                <div>
+                                    <strong>{{ update.location }}</strong><br>
+                                    <small>{{ update.timestamp|date:"M d, Y H:i" }}</small><br>
+                                    <span class="badge bg-primary">{{ update.status }}</span>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- SERVICES -->
+    <section id="services" class="services bg-light">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-5">Our Services</h2>
+            <div class="row justify-content-center g-4">
+                <div class="col-md-4 col-lg-3">🚚 <h5>Domestic Courier</h5></div>
+                <div class="col-md-4 col-lg-3">🌍 <h5>International Shipping</h5></div>
+                <div class="col-md-4 col-lg-3">📍 <h5>Tracking</h5></div>
+                <div class="col-md-4 col-lg-3">⚡ <h5>Express Delivery</h5></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATISTICS -->
+    <section class="stats-section py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Our Impact in Numbers</h2>
+            <div class="stats-scroll-wrapper">
+                <div class="stats-scroll">
+                    <div class="stat-card text-center"><i class="bi bi-box-seam"></i><h3>25,000+</h3><p>Successful Deliveries</p></div>
+                    <div class="stat-card text-center"><i class="bi bi-globe"></i><h3>250+</h3><p>Worldwide Destinations</p></div>
+                    <div class="stat-card text-center"><i class="bi bi-star"></i><h3>4.7/5</h3><p>Customer Satisfaction</p></div>
+                    <div class="stat-card text-center"><i class="bi bi-building"></i><h3>10k+</h3><p>Storage Capacity</p></div>
+                    <div class="stat-card text-center"><i class="bi bi-truck"></i><h3>100+</h3><p>Specialized Vehicles</p></div>
+                    <!-- Duplicated for loop -->
+                    <div class="stat-card text-center"><i class="bi bi-box-seam"></i><h3>25,000+</h3><p>Successful Deliveries</p></div>
+                    <div class="stat-card text-center"><i class="bi bi-globe"></i><h3>250+</h3><p>Worldwide Destinations</p></div>
+                    <div class="stat-card text-center"><i class="bi bi-star"></i><h3>4.7/5</h3><p>Customer Satisfaction</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCROLL SERVICES -->
+    <section class="scroll-services">
+        <div class="scroll-wrapper">
+            <div class="scroll-left">
+                <h2 class="fw-bold">Our Core Logistics Solutions</h2>
+                <p>Powering global supply chains with precision and reliability.</p>
+            </div>
+            <div class="scroll-right">
+                <div class="service-card"><img src="{% static 'images/service1.jpg' %}"><h4>Global Freight Forwarding</h4><p>KAVTRANS coordinates international shipments across air, sea, and land for efficient delivery.</p></div>
+                <div class="service-card"><img src="{% static 'images/service2.jpg' %}"><h4>Express Courier</h4><p>Fast, reliable same-day and overnight delivery for urgent shipments.</p></div>
+                <div class="service-card"><img src="{% static 'images/service3.jpg' %}"><h4>Warehousing &amp; Storage</h4><p>Secure, scalable storage solutions with advanced security systems.</p></div>
+                <div class="service-card"><img src="{% static 'images/service4.jpg' %}"><h4>Inventory Management</h4><p>Track stock levels with full visibility using advanced WMS systems.</p></div>
+                <div class="service-card"><img src="{% static 'images/service5.jpg' %}"><h4>Customs Clearance</h4><p>We handle documentation and duties for seamless international shipping.</p></div>
+                <div class="service-card"><img src="{% static 'images/service6.jpg' %}"><h4>Last-Mile Delivery</h4><p>Efficient delivery to final destination with optimized routing.</p></div>
+                <div class="service-card"><img src="{% static 'images/service7.jpg' %}"><h4>E-commerce Fulfillment</h4><p>We manage pick, pack, and shipping for online businesses.</p></div>
+                <div class="service-card"><img src="{% static 'images/service8.jpg' %}"><h4>Reverse Logistics</h4><p>Efficient returns management and restocking processes.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Frequently Asked Questions</h2>
+            <div class="accordion shadow rounded">
+                <div class="accordion-item">
+                    <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">How can I track my shipment?</button>
+                    <div id="faq1" class="accordion-collapse collapse show">
+                        <div class="accordion-body">Track your package 24/7 using your tracking number.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">Delivery time for international shipments?</button>
+                    <div id="faq2" class="accordion-collapse collapse">
+                        <div class="accordion-body">Express: 3–5 days | Standard: 10–14 days</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">Is cargo insured?</button>
+                    <div id="faq3" class="accordion-collapse collapse">
+                        <div class="accordion-body">Yes, we provide full insurance coverage options.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">Do you handle customs?</button>
+                    <div id="faq4" class="accordion-collapse collapse">
+                        <div class="accordion-body">Yes, we manage all documentation and duties.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta text-center">
+        <h2>Let Us Deliver Your Package</h2>
+        <a href="#hero-logistics" class="btn btn-warning mt-3">Track Now</a>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5 class="fw-bold">KAVTRANS</h5>
+                    <p>Redefining logistics with secure and fast delivery solutions.</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#hero-logistics">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Contact</h6>
+                    <p>info@kavtrans.com<br>+1 123 4567</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Stay Updated</h6>
+                    <input class="form-control mb-2" placeholder="Email address">
+                    <button class="btn btn-warning w-100">Subscribe</button>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center small">
+                © 2026 <strong>KAVTRANS Courier and Travel LLC</strong>. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</div><!-- /section-logistics -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     DONATION PAGE SECTION
+═══════════════════════════════════════════════════════════ -->
+<div id="section-donation" class="page-section">
+
+    <!-- HERO -->
+    <section id="hero-donation">
+        <div class="container">
+            <h1>Together, We Change Lives</h1>
+            <p>Your support helps us deliver more than packages — we deliver hope, relief, and opportunity to those who need it most.</p>
+        </div>
+
+        <!-- ── TOGGLE PILL (donation side) ── -->
+        <div class="hero-toggle-bar">
+            <div class="toggle-pill">
+                <span class="toggle-label" id="label-logistics-d">🚚 Logistics</span>
+
+                <label class="toggle-switch-wrap">
+                    <input type="checkbox" id="pageToggle2" checked>
+                    <span class="toggle-track"></span>
+                    <span class="toggle-thumb"></span>
+                </label>
+
+                <span class="toggle-label active-label" id="label-donation-d">💛 Donations</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- MISSION -->
+    <section class="donation-mission">
+        <div class="container text-center">
+            <h2>Our Why</h2>
+            <p style="max-width:800px;margin:auto;">
+                At KAVTRANS, we believe every delivery has the power to transform lives.
+                Our donation initiatives are focused on real impact — supporting families,
+                funding education, providing emergency relief, and restoring dignity.
+            </p>
+        </div>
+    </section>
+
+    <!-- METRICS -->
+    <section class="donation-metrics">
+        <div class="container">
+            <div class="row g-4 text-center">
+                <div class="col-md-3"><div class="metric-box"><h3>${{ total_raised }}</h3><p>Total Raised</p></div></div>
+                <div class="col-md-3"><div class="metric-box"><h3>{{ total_causes }}</h3><p>Active Campaigns</p></div></div>
+                <div class="col-md-3"><div class="metric-box"><h3>500+</h3><p>Lives Impacted</p></div></div>
+                <div class="col-md-3"><div class="metric-box"><h3>15+</h3><p>Communities Reached</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CAUSES -->
+    <section class="donation-causes">
+        <div class="container">
+            <div class="section-title"><h2>Support Our Causes</h2></div>
+            <div class="row g-4">
+                {% for cause in causes %}
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <img src="{{ cause.image.url }}">
+                        <div class="card-body d-flex flex-column">
+                            <h5>{{ cause.title }}</h5>
+                            <p>{{ cause.description|truncatewords:20 }}</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" style="width:{{ cause.progress_percentage }}%;background:#162e4d;">
+                                    {{ cause.progress_percentage }}%
+                                </div>
+                            </div>
+                            <small>${{ cause.amount_raised }} of ${{ cause.target_amount }}</small>
+                            <a href="{% url 'donate_amount' cause.id %}" class="btn btn-dark mt-auto">Donate Now</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- EMOTIONAL VISUAL -->
+    <section class="visual-section">
+        <div class="visual-content">
+            <h2>Every Donation Tells a Story</h2>
+            <p>From hunger to hope, from struggle to stability — your support makes it possible.</p>
+        </div>
+    </section>
+
+    <!-- STORIES -->
+    <section class="donation-stories">
+        <div class="container">
+            <div class="section-title"><h2>Real Stories, Real Impact</h2></div>
+            <div class="row g-4">
+                <div class="col-md-4"><div class="card story-card"><img src="{% static 'images/story1.jpg' %}"><div class="card-body"><h6>From Street to School</h6><p>These young boys were able to return to school after receiving full educational support.</p></div></div></div>
+                <div class="col-md-4"><div class="card story-card"><img src="{% static 'images/story2.jpg' %}"><div class="card-body"><h6>Medical Relief</h6><p>Funds raised helped cover life-saving treatment for a critically ill patient.</p></div></div></div>
+                <div class="col-md-4"><div class="card story-card"><img src="{% static 'images/story3.jpg' %}"><div class="card-body"><h6>Food for Families</h6><p>Over 100 families received food supplies during a difficult economic period.</p></div></div></div>
+                <div class="col-md-4"><div class="card story-card"><img src="{% static 'images/story4.jpg' %}"><div class="card-body"><h6>Small Business Revival</h6><p>A struggling trader restarted her business with financial support from donations.</p></div></div></div>
+                <div class="col-md-4"><div class="card story-card"><img src="{% static 'images/story5.jpg' %}"><div class="card-body"><h6>Shelter Restored</h6><p>A displaced family regained safe housing through community contributions.</p></div></div></div>
+                <div class="col-md-4"><div class="card story-card"><img src="{% static 'images/story6.jpg' %}"><div class="card-body"><h6>Hope After Disaster</h6><p>A displaced family regained safe housing through community contributions.</p></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DONATION CTA -->
+    <section class="donation-cta text-center">
+        <h3>Be Part of Something Bigger</h3>
+        <p>Your generosity can change someone's life today.</p>
+        <a href="{% url 'causes_page' %}" class="btn btn-dark">Donate Now</a>
+    </section>
+
+    <!-- FOOTER (donation side) -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5 class="fw-bold">KAVTRANS</h5>
+                    <p>Redefining logistics with secure and fast delivery solutions.</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" onclick="switchTo('logistics')">Home</a></li>
+                        <li><a href="#" onclick="switchTo('logistics')">Services</a></li>
+                        <li><a href="#" onclick="switchTo('logistics')">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Contact</h6>
+                    <p>info@kavtrans.com<br>+1 123 4567</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Stay Updated</h6>
+                    <input class="form-control mb-2" placeholder="Email address">
+                    <button class="btn btn-warning w-100">Subscribe</button>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center small">
+                © 2026 <strong>KAVTRANS Courier and Travel LLC</strong>. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</div><!-- /section-donation -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     TOGGLE SCRIPT
+═══════════════════════════════════════════════════════════ -->
+<script>
+    const toggle1 = document.getElementById('pageToggle');
+    const toggle2 = document.getElementById('pageToggle2');
+
+    const secLogistics = document.getElementById('section-logistics');
+    const secDonation  = document.getElementById('section-donation');
+
+    const lblLogistics  = document.getElementById('label-logistics');
+    const lblDonation   = document.getElementById('label-donation');
+    const lblLogisticsD = document.getElementById('label-logistics-d');
+    const lblDonationD  = document.getElementById('label-donation-d');
+
+    function switchTo(page) {
+        if (page === 'donation') {
+            secLogistics.classList.remove('active');
+            secDonation.classList.add('active');
+            toggle1.checked = true;
+            toggle2.checked = true;
+            lblLogistics.classList.remove('active-label');
+            lblDonation.classList.add('active-label');
+            lblLogisticsD.classList.remove('active-label');
+            lblDonationD.classList.add('active-label');
+        } else {
+            secDonation.classList.remove('active');
+            secLogistics.classList.add('active');
+            toggle1.checked = false;
+            toggle2.checked = false;
+            lblDonation.classList.remove('active-label');
+            lblLogistics.classList.add('active-label');
+            lblDonationD.classList.remove('active-label');
+            lblLogisticsD.classList.add('active-label');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    toggle1.addEventListener('change', () => switchTo(toggle1.checked ? 'donation' : 'logistics'));
+    toggle2.addEventListener('change', () => switchTo(toggle2.checked ? 'donation' : 'logistics'));
+</script>
+
+<!-- Tracking spinner -->
+<script>
+    const trackForm = document.querySelector('.track-form');
+    if (trackForm) {
+        trackForm.addEventListener('submit', function () {
+            const btn     = document.getElementById('trackBtn');
+            const text    = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+            btn.disabled  = true;
+            spinner.classList.remove('d-none');
+            text.innerText = "Tracking...";
+        });
+    }
+</script>
+
+<!-- Auto-scroll to tracking result -->
+<script>
+    {% if tracking_result %}
+    window.onload = function () {
+        document.getElementById("tracking-card")?.scrollIntoView({ behavior: "smooth" });
+    };
+    {% endif %}
+</script>
+
+{% endblock %}

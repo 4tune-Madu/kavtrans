@@ -15,7 +15,7 @@ urlpatterns = [
     path("packages/<int:package_id>/", views.package_detail, name="package_detail"),
     
     # Donations
-    path("donations/", views.donations, name="donations"),
+    
     path("donate/<int:cause_id>/", views.donate_to_cause, name="donate_to_cause"),
 
     #Payment

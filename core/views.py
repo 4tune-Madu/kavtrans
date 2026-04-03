@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from packages.models import Package
-from tracking.models import TrackingHistory   # ✅ ADD THIS
+from tracking.models import TrackingHistory
+from core.models import DonationCause          # ✅ ADD
+from django.db.models import Sum               # ✅ ADD
 
 def home(request):
 
     tracking_result = None
-    latest_update = None   # ✅ NEW
+    latest_update = None
 
     tracking_number = request.GET.get("tracking_number")
 
@@ -14,8 +16,6 @@ def home(request):
             tracking_result = Package.objects.get(
                 tracking_number__iexact=tracking_number
             )
-
-            # ✅ GET LATEST TRACKING UPDATE
             latest_update = TrackingHistory.objects.filter(
                 package=tracking_result
             ).order_by("-timestamp").first()
@@ -23,9 +23,19 @@ def home(request):
         except Package.DoesNotExist:
             tracking_result = "not_found"
 
-    return render(request, "core/home.html", {
+    # ✅ DONATION DATA
+    causes = DonationCause.objects.filter(is_active=True)
+    total_raised = DonationCause.objects.aggregate(total=Sum('amount_raised'))['total'] or 0
+    total_target = DonationCause.objects.aggregate(total=Sum('target_amount'))['total'] or 0
+    total_causes = causes.count()
+
+    return render(request, "core/home3.html", {
         "tracking_result": tracking_result,
-        "latest_update": latest_update   # ✅ PASS TO TEMPLATE
+        "latest_update": latest_update,
+        "causes": causes,              # ✅
+        "total_raised": total_raised,  # ✅
+        "total_target": total_target,  # ✅
+        "total_causes": total_causes,  # ✅
     })
 
 
