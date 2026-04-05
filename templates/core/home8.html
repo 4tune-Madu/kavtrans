@@ -525,6 +525,154 @@
     .reveal-row .reveal-text { transform:translateY(30px); }
 }
 
+/* ══════════════════════════════════════════════
+   FAQ — redesigned
+══════════════════════════════════════════════ */
+.faq-section { padding:100px 0; background:#0f172a; }
+.faq-header { text-align:center; margin-bottom:60px; }
+.faq-eyebrow { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#ff6b00; margin-bottom:14px; }
+.faq-header h2 { font-size:clamp(26px,3vw,40px); font-weight:800; color:#fff; margin-bottom:12px; }
+.faq-header p { color:rgba(255,255,255,0.5); font-size:15px; max-width:520px; margin:0 auto; }
+.faq-header p a { color:#ff6b00; text-decoration:none; }
+.faq-header p a:hover { text-decoration:underline; }
+.faq-layout { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
+.faq-item { border:1px solid rgba(255,255,255,0.08); border-radius:14px; margin-bottom:12px; overflow:hidden; transition:border-color 0.3s; }
+.faq-item.open { border-color:rgba(255,107,0,0.35); }
+.faq-q { width:100%; background:rgba(255,255,255,0.03); border:none; padding:18px 20px; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left; color:#fff; font-size:15px; font-weight:600; font-family:'Poppins',sans-serif; transition:background 0.2s; }
+.faq-q:hover { background:rgba(255,255,255,0.06); }
+.faq-item.open .faq-q { background:rgba(255,107,0,0.06); }
+.faq-icon { width:34px; height:34px; border-radius:9px; background:rgba(255,107,0,0.12); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.faq-icon i { color:#ff6b00; font-size:14px; }
+.faq-q span { flex:1; }
+.faq-chevron { font-size:14px; color:rgba(255,255,255,0.4); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); flex-shrink:0; }
+.faq-item.open .faq-chevron { transform:rotate(180deg); color:#ff6b00; }
+.faq-a { max-height:0; overflow:hidden; transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1),padding 0.3s; padding:0 20px 0 68px; }
+.faq-item.open .faq-a { max-height:300px; padding:0 20px 18px 68px; }
+.faq-a p { color:rgba(255,255,255,0.6); font-size:14px; line-height:1.75; margin:0; }
+.faq-a strong { color:rgba(255,255,255,0.85); }
+.faq-contact-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:20px; padding:32px 28px; position:sticky; top:100px; }
+.faq-contact-icon { width:52px; height:52px; background:rgba(255,107,0,0.12); border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+.faq-contact-icon i { font-size:22px; color:#ff6b00; }
+.faq-contact-card h4 { color:#fff; font-weight:800; font-size:18px; margin-bottom:10px; }
+.faq-contact-card > p { color:rgba(255,255,255,0.5); font-size:14px; line-height:1.65; margin-bottom:24px; }
+.faq-contact-methods { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+.faq-contact-method { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:14px 16px; text-decoration:none; transition:0.25s; color:inherit; }
+a.faq-contact-method:hover { border-color:rgba(255,107,0,0.3); background:rgba(255,107,0,0.05); }
+.faq-contact-method i { font-size:18px; color:#ff6b00; flex-shrink:0; }
+.faq-contact-method strong { display:block; color:#fff; font-size:13px; margin-bottom:2px; }
+.faq-contact-method span  { font-size:12px; color:rgba(255,255,255,0.4); }
+.faq-response-badge { background:rgba(255,107,0,0.08); border:1px solid rgba(255,107,0,0.2); border-radius:10px; padding:10px 14px; font-size:12px; color:rgba(255,255,255,0.5); display:flex; align-items:center; gap:6px; }
+.faq-response-badge i { color:#ff6b00; }
+.faq-response-badge strong { color:#fff; }
+@media (max-width:900px) {
+    .faq-layout { grid-template-columns:1fr; }
+    .faq-contact-card { position:relative; top:auto; }
+}
+@media (max-width:600px) {
+    .faq-a { padding:0 14px 0 14px; }
+    .faq-item.open .faq-a { padding:0 14px 16px 14px; }
+    .faq-q { font-size:14px; padding:14px; gap:10px; }
+}
+
+/* ══════════════════════════════════════════════
+   GLOBAL MOBILE OVERFLOW FIXES
+══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: hidden; max-width: 100%; }
+
+/* Footer subscribe — stack on narrow screens */
+@media (max-width:500px) {
+    .footer-subscribe-form { flex-direction:column; }
+    .footer-subscribe-form input,
+    .footer-subscribe-form button { width:100%; }
+}
+
+/* Tracking input — stack on mobile */
+@media (max-width:600px) {
+    .tracking-section { padding:50px 0; }
+    .tracking-input-wrap { flex-wrap:wrap; padding:10px; gap:8px; }
+    .tracking-input-wrap input { width:100%; min-width:0; }
+    .tracking-input-wrap button { width:100%; justify-content:center; }
+    .tracking-hints { flex-direction:column; gap:6px; }
+    .tracking-left h2 { font-size:22px; }
+}
+
+/* Hero — small screens */
+@media (max-width:480px) {
+    .hero-slideshow { min-height:100svh; }
+    .slide-inner h1 { font-size:24px; }
+    .slide-inner h2 { font-size:22px; }
+    .slide-inner p  { font-size:14px; }
+    .slide-stats { gap:12px; }
+    .slide-stat strong { font-size:20px; }
+    .slide-tag { font-size:10px; }
+    .hero-toggle-bar { width:calc(100% - 32px); left:16px; transform:none; }
+    .toggle-pill { width:100%; justify-content:center; }
+}
+
+/* Stats marquee */
+@media (max-width:600px) {
+    .stat-card { min-width:160px; padding:20px 14px; }
+}
+
+/* Freight — single column on small */
+@media (max-width:500px) {
+    .freight-grid { grid-template-columns:1fr; }
+    .freight-card { min-height:300px; }
+}
+
+/* Testimonials */
+@media (max-width:600px) {
+    .testi-layout { grid-template-columns:1fr; gap:24px; }
+    .testi-image-wrap { min-height:260px; }
+    .testi-image-wrap img { min-height:260px; }
+    .testi-card { padding:18px; }
+}
+
+/* General section padding on mobile */
+@media (max-width:576px) {
+    .container { padding-left:16px; padding-right:16px; }
+    .experience-section,
+    .why-section,
+    .freight-section,
+    .testimonials-section,
+    .faq-section,
+    .alt-services { padding:60px 0; }
+    .tr-details-grid { grid-template-columns:1fr; }
+    .exp-pillars { grid-template-columns:1fr; }
+    .exp-right-numbers { grid-template-columns:1fr 1fr; }
+}
+
+/* ══════════════════════════════════════════════
+   NAVBAR HAMBURGER — professional restyle
+══════════════════════════════════════════════ */
+.navbar-toggler {
+    border: 1.5px solid rgba(255,255,255,0.25) !important;
+    border-radius: 10px !important;
+    padding: 8px 10px !important;
+    background: rgba(255,255,255,0.08) !important;
+    backdrop-filter: blur(8px);
+    transition: background 0.25s, border-color 0.25s !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.navbar-toggler:hover {
+    background: rgba(255,107,0,0.15) !important;
+    border-color: rgba(255,107,0,0.5) !important;
+}
+.navbar-toggler.active {
+    background: rgba(255,107,0,0.2) !important;
+    border-color: #ff6b00 !important;
+}
+.menu-icon { width:22px; height:2px; background:#fff; display:block; position:relative; transition:background 0.3s ease; border-radius:2px; }
+.menu-icon::before,
+.menu-icon::after { content:""; position:absolute; left:0; height:2px; background:#fff; border-radius:2px; transition:all 0.3s cubic-bezier(0.4,0,0.2,1); }
+.menu-icon::before { top:-7px; width:16px; }
+.menu-icon::after  { top:7px; width:22px; }
+.navbar-toggler.active .menu-icon { background:transparent; }
+.navbar-toggler.active .menu-icon::before { transform:rotate(45deg); top:0; width:22px; }
+.navbar-toggler.active .menu-icon::after  { transform:rotate(-45deg); top:0; }
+
 </style>
 
 
@@ -621,7 +769,7 @@
             <form method="GET" class="tracking-form" id="trackingForm">
                 <div class="tracking-input-wrap">
                     <i class="bi bi-upc-scan tracking-input-icon"></i>
-                    <input type="text" name="tracking_number" id="trackingInput" placeholder="e.g. KAV-20240001" autocomplete="off"
+                    <input type="text" name="tracking_number" id="trackingInput" placeholder="e.g. KAT-2026-280942" autocomplete="off"
                         {% if tracking_result and tracking_result != "not_found" %}value="{{ tracking_result.tracking_number }}"{% endif %}>
                     <button type="submit" id="trackBtn">
                         <span id="btnText">Track</span>
@@ -632,7 +780,7 @@
             </form>
 
             <div class="tracking-hints">
-                <span><i class="bi bi-info-circle"></i> Tracking numbers start with <strong>KAV-</strong></span>
+                <span><i class="bi bi-info-circle"></i> Format: <strong>KAT-YYYY-XXXXXX</strong></span>
                 <span><i class="bi bi-clock"></i> Updates every 30 minutes</span>
             </div>
         </div>
@@ -789,7 +937,7 @@
         <!-- ROW 4 — image right -->
         <div class="alt-svc-row alt-svc-row--reverse reveal-row">
             <div class="alt-svc-image reveal-img">
-                <img src="{% static 'images/service8.jpg' %}" alt="Express Delivery">
+                <img src="{% static 'images/service5.jpg' %}" alt="Express Delivery">
                 <div class="alt-svc-badge"><i class="bi bi-lightning-charge-fill"></i></div>
             </div>
             <div class="alt-svc-content reveal-text">
@@ -839,7 +987,7 @@
         <div class="scroll-right">
 
             <div class="service-card">
-                <img src="{% static 'images/GlobalFreightFowarding.jpg' %}" alt="Global Freight">
+                <img src="{% static 'images/service1.jpg' %}" alt="Global Freight">
                 <div class="service-card-body">
                     <h4>Global Freight Forwarding</h4>
                     <p>KAVTRANS coordinates international shipments across air, sea, and land for efficient, door-to-door delivery tailored to your cargo type and urgency.</p>
@@ -849,7 +997,7 @@
             </div>
 
             <div class="service-card">
-                <img src="{% static 'images/expressCourier.jpg' %}" alt="Express Courier">
+                <img src="{% static 'images/service2.jpg' %}" alt="Express Courier">
                 <div class="service-card-body">
                     <h4>Express Courier</h4>
                     <p>Fast, reliable same-day and overnight delivery for urgent shipments. Our express network ensures your package arrives when it matters most.</p>
@@ -1136,26 +1284,125 @@
 </section>
 
 <!-- FAQ -->
-<section id="faq" class="py-5 bg-light">
+<section id="faq" class="faq-section">
     <div class="container">
-        <h2 class="text-center fw-bold mb-5">Frequently Asked Questions</h2>
-        <div class="accordion shadow rounded">
-            <div class="accordion-item">
-                <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#faq1">How can I track my shipment?</button>
-                <div id="faq1" class="accordion-collapse collapse show"><div class="accordion-body">Track your package 24/7 using your tracking number on our home page.</div></div>
+
+        <div class="faq-header">
+            <span class="faq-eyebrow"><i class="bi bi-patch-question-fill"></i> FAQ</span>
+            <h2>Frequently Asked Questions</h2>
+            <p>Everything you need to know about shipping, tracking, and working with KAVTRANS. Can't find your answer? <a href="mailto:support@kavtrans.com">Contact our team.</a></p>
+        </div>
+
+        <div class="faq-layout">
+
+            <!-- LEFT — accordion -->
+            <div class="faq-list">
+
+                <div class="faq-item open">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        <span class="faq-icon"><i class="bi bi-geo-alt-fill"></i></span>
+                        <span>How do I track my shipment?</span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-a">
+                        <p>Use your unique tracking number (format: <strong>KAT-YYYY-XXXXXX</strong>) in the tracking section on our homepage. You'll get instant access to your shipment's real-time location, status updates, and a full delivery timeline — available 24 hours a day, 7 days a week.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        <span class="faq-icon"><i class="bi bi-clock-fill"></i></span>
+                        <span>How long does international delivery take?</span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-a">
+                        <p>Delivery times depend on the service selected and destination. Our <strong>Express Air</strong> service delivers in 2–5 business days globally. <strong>Standard Sea Freight</strong> typically takes 10–21 days depending on the route. We always provide an estimated delivery date at the time of booking.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        <span class="faq-icon"><i class="bi bi-shield-fill-check"></i></span>
+                        <span>Is my cargo insured during transit?</span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-a">
+                        <p>Yes. All shipments include basic carrier liability coverage. We also offer full cargo insurance options for comprehensive protection against loss, damage, or theft throughout the entire journey — from pickup to final delivery. Our team can advise on the right coverage for your cargo value.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        <span class="faq-icon"><i class="bi bi-file-earmark-text-fill"></i></span>
+                        <span>Do you handle customs clearance?</span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-a">
+                        <p>Absolutely. Our in-house customs and trade compliance team manages all documentation, duties, tariff classifications (HS codes), and regulatory requirements on your behalf. We work with customs authorities across 250+ countries to ensure zero-delay border crossings.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        <span class="faq-icon"><i class="bi bi-box-seam-fill"></i></span>
+                        <span>What types of cargo do you handle?</span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-a">
+                        <p>We handle a wide range of cargo including general goods, fragile items, temperature-sensitive products, oversized freight, hazardous materials (with proper certification), and high-value shipments. Contact our team to discuss specific requirements for your cargo type.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        <span class="faq-icon"><i class="bi bi-headset"></i></span>
+                        <span>How do I get a shipping quote?</span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-a">
+                        <p>You can request a free quote by contacting our team at <strong>info@kavtrans.com</strong> or calling <strong>+1 (123) 456-7890</strong>. Provide your origin, destination, cargo dimensions, and weight — and we'll respond with a competitive, all-inclusive quote within 2 business hours.</p>
+                    </div>
+                </div>
+
             </div>
-            <div class="accordion-item">
-                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq2">Delivery time for international shipments?</button>
-                <div id="faq2" class="accordion-collapse collapse"><div class="accordion-body">Express: 3–5 days | Standard: 10–14 days</div></div>
+
+            <!-- RIGHT — contact card -->
+            <div class="faq-contact-card">
+                <div class="faq-contact-icon">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+                <h4>Still have questions?</h4>
+                <p>Our logistics specialists are available around the clock to assist you with any shipping enquiry, customs question, or service request.</p>
+
+                <div class="faq-contact-methods">
+                    <a href="mailto:support@kavtrans.com" class="faq-contact-method">
+                        <i class="bi bi-envelope-fill"></i>
+                        <div>
+                            <strong>Email Support</strong>
+                            <span>support@kavtrans.com</span>
+                        </div>
+                    </a>
+                    <a href="tel:+11234567890" class="faq-contact-method">
+                        <i class="bi bi-telephone-fill"></i>
+                        <div>
+                            <strong>Call Us</strong>
+                            <span>+1 (123) 456-7890</span>
+                        </div>
+                    </a>
+                    <div class="faq-contact-method">
+                        <i class="bi bi-clock-fill"></i>
+                        <div>
+                            <strong>24/7 Emergency Line</strong>
+                            <span>Always available for urgent cargo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-response-badge">
+                    <i class="bi bi-lightning-charge-fill"></i> Average response time: <strong>under 2 hours</strong>
+                </div>
             </div>
-            <div class="accordion-item">
-                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq3">Is cargo insured?</button>
-                <div id="faq3" class="accordion-collapse collapse"><div class="accordion-body">Yes, we provide full insurance coverage options for all shipment types.</div></div>
-            </div>
-            <div class="accordion-item">
-                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#faq4">Do you handle customs?</button>
-                <div id="faq4" class="accordion-collapse collapse"><div class="accordion-body">Yes, our in-house compliance team manages all documentation, duties, and border formalities.</div></div>
-            </div>
+
         </div>
     </div>
 </section>
@@ -1221,11 +1468,11 @@
                     </div>
                     <div class="footer-contact-item">
                         <i class="bi bi-telephone-fill"></i>
-                        <p><strong>Call Us</strong>+1 (123) 000-0000<br>+1 (123) 000-0000</p>
+                        <p><strong>Call Us</strong>+1 (123) 456-7890<br>+1 (123) 456-7891</p>
                     </div>
                     <div class="footer-contact-item">
                         <i class="bi bi-geo-alt-fill"></i>
-                        <p><strong>Head Office</strong>Kavtrans Logistics,<br>Commerce City, USA</p>
+                        <p><strong>Head Office</strong>123 Logistics Ave,<br>Commerce City, USA</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -1565,6 +1812,18 @@
         document.getElementById("tracking")?.scrollIntoView({ behavior:"smooth" });
     };
     {% endif %}
+</script>
+
+<!-- FAQ TOGGLE -->
+<script>
+    function toggleFaq(btn) {
+        const item = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+        // Open clicked if it was closed
+        if (!isOpen) item.classList.add('open');
+    }
 </script>
 
 <!-- SCROLL REVEAL for alternating services -->
