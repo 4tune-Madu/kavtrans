@@ -29,7 +29,7 @@ def home(request):
     total_target = DonationCause.objects.aggregate(total=Sum('target_amount'))['total'] or 0
     total_causes = causes.count()
 
-    return render(request, "core/home8.html", {
+    return render(request, "core/home9.html", {
         "tracking_result": tracking_result,
         "latest_update": latest_update,
         "causes": causes,              # ✅
