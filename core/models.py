@@ -107,3 +107,22 @@ class PayPalAccount(models.Model):
 
     def __str__(self):
         return self.email
+
+from django.db import models
+
+class Service(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    short_description = models.TextField()
+    full_description = models.TextField()
+
+    image = models.ImageField(upload_to='services/', blank=True, null=True)
+
+    # Optional extras (very useful)
+    feature_1 = models.CharField(max_length=200, blank=True)
+    feature_2 = models.CharField(max_length=200, blank=True)
+    feature_3 = models.CharField(max_length=200, blank=True)
+    feature_4 = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return self.title

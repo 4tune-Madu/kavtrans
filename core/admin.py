@@ -36,3 +36,11 @@ class PayPalAccountAdmin(admin.ModelAdmin):
     list_display = ('email', 'is_active')
     search_fields = ('email',)
     list_filter = ('is_active',)
+
+from django.contrib import admin
+from .models import Service
+
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slug')
+    prepopulated_fields = {'slug': ('title',)}

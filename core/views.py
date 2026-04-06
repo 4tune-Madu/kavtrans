@@ -305,3 +305,37 @@ def donor_details(request, donation_id):
 
 def donation_thank_you(request):
     return render(request, "dashboard/donation_thank_you.html")
+
+from django.shortcuts import render
+
+def service_detail(request, service_name):
+    # temporary content (we’ll improve later)
+    services = {
+        "domestic-courier": {
+            "title": "Domestic Courier",
+            "description": "Fast, secure delivery across the country."
+        },
+        "international-shipping": {
+            "title": "International Shipping",
+            "description": "We ship worldwide with full customs handling."
+        },
+        "warehousing-storage": {
+            "title": "Warehousing & Storage",
+            "description": "Secure and scalable storage solutions."
+        },
+        "express-delivery": {
+            "title": "Express Delivery",
+            "description": "Ultra-fast delivery for urgent shipments."
+        },
+        "freight-forwarding": {
+            "title": "Freight Forwarding",
+            "description": "Global freight solutions across air, sea, and land."
+        },
+    }
+
+    service = services.get(service_name)
+
+    return render(request, "services/detail.html", {
+        "service": service,
+        "service_name": service_name
+    })

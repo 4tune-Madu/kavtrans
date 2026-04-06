@@ -19,4 +19,10 @@ urlpatterns = [
 
     path("donation/<int:donation_id>/details/", views.donor_details, name="donor_details"),
     path("donation/thank-you/", views.donation_thank_you, name="donation_thank_you"),
+
+
+    #Services on Logistics Home
+    path('services/<str:service_name>/', views.service_detail, name='service_detail'),
+
 ]
+

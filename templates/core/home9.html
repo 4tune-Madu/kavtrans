@@ -1011,7 +1011,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <li><i class="bi bi-check-circle-fill"></i> Proof of delivery & SMS alerts</li>
                     <li><i class="bi bi-check-circle-fill"></i> Nationwide coverage with 100+ vehicles</li>
                 </ul>
-                <a href="{% url 'home' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'service_detail' 'domestic-courier' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
 
@@ -1031,7 +1031,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <li><i class="bi bi-check-circle-fill"></i> Multi-modal routing (air, sea, land)</li>
                     <li><i class="bi bi-check-circle-fill"></i> Dedicated international freight managers</li>
                 </ul>
-                <a href="{% url 'home' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'service_detail' 'international-shipping' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
 
@@ -1051,7 +1051,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <li><i class="bi bi-check-circle-fill"></i> Flexible short & long-term rental</li>
                     <li><i class="bi bi-check-circle-fill"></i> Same-day dispatch capability</li>
                 </ul>
-                <a href="{% url 'home' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'service_detail' 'warehousing-storage' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
 
@@ -1071,7 +1071,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <li><i class="bi bi-check-circle-fill"></i> Real-time checkpoint notifications</li>
                     <li><i class="bi bi-check-circle-fill"></i> 99.2% on-time delivery rate</li>
                 </ul>
-                <a href="{% url 'home' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'service_detail' 'express-delivery' %}" class="alt-svc-btn">Read More <i class="bi bi-arrow-right"></i></a>
             </div>
         </div>
 
@@ -1113,7 +1113,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>Global Freight Forwarding</h4>
                     <p>KAVTRANS coordinates international shipments across air, sea, and land for efficient, door-to-door delivery tailored to your cargo type and urgency.</p>
                     <div class="details">Covers 250+ countries · Multi-modal routing · Real-time cargo tracking · Dedicated freight managers</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
+                    
                 </div>
             </div>
 
@@ -1123,7 +1123,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>Express Courier</h4>
                     <p>Fast, reliable same-day and overnight delivery for urgent shipments. Our express network ensures your package arrives when it matters most.</p>
                     <div class="details">Same-day local · Next-day national · 48h international · Live GPS tracking</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1133,7 +1132,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>Warehousing &amp; Storage</h4>
                     <p>Secure, scalable storage solutions with 24/7 CCTV, climate control, and advanced inventory management for businesses of all sizes.</p>
                     <div class="details">10,000+ sqft · Climate-controlled bays · 24/7 security · Flexible rental periods</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1143,7 +1141,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>Inventory Management</h4>
                     <p>Track stock levels with full visibility using our advanced WMS systems. Reduce overstock, prevent shortfalls, and optimise your supply chain.</p>
                     <div class="details">Real-time dashboards · Barcode & RFID · Low-stock alerts · ERP integration</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1153,7 +1150,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>Customs Clearance</h4>
                     <p>We handle all documentation, duties, and compliance for seamless cross-border shipping — so you don't have to worry about red tape.</p>
                     <div class="details">Import & export docs · Duty calculation · HS code classification · Regulatory compliance</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1163,7 +1159,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>Last-Mile Delivery</h4>
                     <p>Efficient delivery to the final destination using AI-optimised routing, ensuring speed, accuracy, and customer satisfaction on every drop.</p>
                     <div class="details">Route optimisation · Proof of delivery · Failed-delivery management · SMS notifications</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1173,7 +1168,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>E-commerce Fulfillment</h4>
                     <p>We manage pick, pack, and shipping for online businesses — integrating directly with major platforms to automate your order fulfillment workflow.</p>
                     <div class="details">Shopify · WooCommerce · Amazon FBA prep · Returns handling · Custom packaging</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1183,7 +1177,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <h4>Reverse Logistics</h4>
                     <p>Efficient returns management and restocking that protect your margins and keep customers happy with hassle-free return experiences.</p>
                     <div class="details">Returns portal · Inspection & grading · Restocking · Disposal & recycling options</div>
-                    <a href="{% url 'home' %}" class="btn-see-more">See More <i class="bi bi-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1219,7 +1212,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
                         <div><h6>Global Partner Network</h6><p>300+ vetted carrier and customs partners across every major trade corridor.</p></div>
                     </div>
                 </div>
-                <a href="{% url 'home' %}" class="btn-exp-more">Read Our Full Story <i class="bi bi-arrow-right"></i></a>
             </div>
 
             <div class="col-lg-6">
@@ -1283,7 +1275,6 @@ html, body { overflow-x: hidden; max-width: 100%; }
             </div>
         </div>
         <div class="why-cta">
-            <a href="{% url 'home' %}" class="btn-why-more">Learn More About Us <i class="bi bi-arrow-right-circle"></i></a>
         </div>
     </div>
 </section>
@@ -1304,7 +1295,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <div class="freight-icon"><i class="bi bi-building"></i></div>
                     <h4>Warehouse &amp; Distribution</h4>
                     <p>10,000+ sqft of secure, climate-controlled warehousing with smart inventory management and same-day dispatch capability.</p>
-                    <a href="{% url 'home' %}" class="btn-freight-more">Read More <i class="bi bi-arrow-right"></i></a>
+                    
                 </div>
             </div>
             <div class="freight-card" id="freight-land">
@@ -1314,7 +1305,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <div class="freight-icon"><i class="bi bi-truck-front-fill"></i></div>
                     <h4>Land Freight</h4>
                     <p>A fleet of 100+ specialised vehicles covering domestic and cross-border road freight with real-time GPS and temperature control.</p>
-                    <a href="{% url 'home' %}" class="btn-freight-more">Read More <i class="bi bi-arrow-right"></i></a>
+                    
                 </div>
             </div>
             <div class="freight-card" id="freight-air">
@@ -1324,7 +1315,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <div class="freight-icon"><i class="bi bi-airplane-fill"></i></div>
                     <h4>Air Freight</h4>
                     <p>Priority and consolidated air cargo services on 200+ routes worldwide — from express same-day charters to economy loads.</p>
-                    <a href="{% url 'home' %}" class="btn-freight-more">Read More <i class="bi bi-arrow-right"></i></a>
+                    
                 </div>
             </div>
             <div class="freight-card" id="freight-sea">
@@ -1334,7 +1325,7 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <div class="freight-icon"><i class="bi bi-water"></i></div>
                     <h4>Sea Freight</h4>
                     <p>FCL and LCL ocean freight across major global trade lanes — cost-effective, reliable, and fully tracked from port to delivery.</p>
-                    <a href="{% url 'home' %}" class="btn-freight-more">Read More <i class="bi bi-arrow-right"></i></a>
+                    
                 </div>
             </div>
         </div>
@@ -1506,8 +1497,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
                     <a href="tel:+11234567890" class="faq-contact-method">
                         <i class="bi bi-telephone-fill"></i>
                         <div>
-                            <strong>Call Us</strong>
-                            <span>+1 (123) 456-7890</span>
+                            <strong>Cusomer Service</strong>
+                            <span>24/7 Active</span>
                         </div>
                     </a>
                     <div class="faq-contact-method">
