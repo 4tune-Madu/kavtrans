@@ -24,5 +24,5 @@ urlpatterns = [
     path("payment-accounts/edit/<str:account_type>/<int:id>/", views.edit_payment_account, name="edit_payment_account"),
     path("payment-accounts/delete/<str:account_type>/<int:id>/", views.delete_payment_account, name="delete_payment_account"),
 
-
+    path("dashboard/services/add/", views.add_service, name="add_service"),
 ]

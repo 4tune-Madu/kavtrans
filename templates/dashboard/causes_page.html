@@ -4,144 +4,457 @@
 {% block content %}
 
 <style>
-:root{
-    --primary:#162e4d;
-    --light:#f5f7fa;
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+    --navy:   #162e4d;
+    --dark:   #0f172a;
+    --accent: #ff6b00;
+    --light:  #f8fafc;
+    --muted:  #64748b;
+    --border: #e2e8f0;
 }
 
-body{
-    background:var(--light);
+.cp-causes-page {
+    min-height: 100vh;
+    background: var(--light);
+    font-family: 'Poppins', sans-serif;
+    animation: cpFade 0.5s cubic-bezier(0.4,0,0.2,1) both;
+    padding-bottom: 100px;
+}
+@keyframes cpFade {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
 }
 
-/* HERO */
-.causes-hero{
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-                url('{% static "images/causes-hero.jpg" %}');
-    background-size:cover;
-    background-position:center;
-    color:white;
-    padding:120px 20px;
-    text-align:center;
+/* ── HERO ── */
+.causes-hero {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--dark);
+}
+.causes-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url('{% static "images/donation-hero.jpg" %}') center/cover no-repeat;
+    transition: transform 8s ease;
+}
+.causes-hero:hover .causes-hero-bg { transform: scale(1.04); }
+.causes-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.55) 0%,
+        rgba(15,23,42,0.88) 100%
+    );
+}
+.causes-hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 80px 0 72px;
+    width: 100%;
+    text-align: center;
+}
+.causes-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    padding: 4px 16px;
+    margin-bottom: 20px;
+}
+.causes-hero h1 {
+    font-size: clamp(28px, 4vw, 54px);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 16px;
+}
+.causes-hero-sub {
+    font-size: 17px;
+    color: rgba(255,255,255,0.65);
+    max-width: 580px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
 }
 
-.causes-hero h1{
-    font-size:42px;
-    font-weight:700;
+/* Hero stats row */
+.causes-hero-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+}
+.causes-hero-stat {
+    padding: 0 28px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    text-align: center;
+}
+.causes-hero-stat:last-child { border-right: none; }
+.causes-hero-stat strong {
+    display: block;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 2px;
+}
+.causes-hero-stat span {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
 }
 
-.causes-hero p{
-    max-width:700px;
-    margin:auto;
-    font-size:18px;
+/* ── CAUSES SECTION ── */
+.causes-section {
+    padding: 72px 0;
+}
+.causes-section-header {
+    text-align: center;
+    margin-bottom: 52px;
+}
+.causes-section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+.causes-section-header h2 {
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+.causes-section-header p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
 }
 
-.section{
-    padding:80px 20px;
+/* ── CAUSE CARD ── */
+.cause-card-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.cause-card-new {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.cause-card-new:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.13);
+    border-color: rgba(255,107,0,0.2);
 }
 
-/* CARD */
-.cause-card{
-    background:#fff;
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 10px 25px rgba(0,0,0,0.08);
-    transition:0.3s;
-    height:100%;
+.cause-card-img-wrap {
+    position: relative;
+    overflow: hidden;
+}
+.cause-card-img-wrap img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+.cause-card-new:hover .cause-card-img-wrap img { transform: scale(1.05); }
+
+.cause-card-category {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255,107,0,0.9);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 20px;
+    padding: 4px 12px;
 }
 
-.cause-card:hover{
-    transform:translateY(-6px);
+.cause-card-body {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
-.cause-img{
-    height:220px;
-    object-fit:cover;
-    width:100%;
+.cause-card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 8px;
+    line-height: 1.3;
 }
 
-.cause-body{
-    padding:20px;
+.cause-card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 18px;
+    flex: 1;
 }
 
-.cause-title{
-    font-weight:600;
-    color:var(--primary);
+/* Progress */
+.cause-prog-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 7px;
+}
+.cause-prog-raised {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+}
+.cause-prog-pct {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+}
+.cause-prog-bar-bg {
+    background: #e2e8f0;
+    border-radius: 10px;
+    height: 7px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.cause-prog-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #ff9500);
+    border-radius: 10px;
+}
+.cause-prog-goal {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 18px;
 }
 
-.progress{
-    height:10px;
-    border-radius:10px;
+/* Donate button */
+.cause-donate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--dark);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 12px;
+    text-decoration: none;
+    transition: 0.25s;
+    letter-spacing: 0.03em;
+    margin-top: auto;
+}
+.cause-donate-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255,107,0,0.3);
 }
 
-.progress-bar{
-    background:var(--primary);
+/* ── EMPTY STATE ── */
+.causes-empty {
+    text-align: center;
+    padding: 80px 20px;
 }
-
-.btn-donate{
-    background:var(--primary);
-    color:white;
-    border:none;
-    border-radius:8px;
-    padding:10px;
-    width:100%;
+.causes-empty i {
+    font-size: 48px;
+    color: #cbd5e1;
+    display: block;
+    margin-bottom: 16px;
 }
+.causes-empty h4 { color: var(--dark); font-weight: 700; margin-bottom: 8px; }
+.causes-empty p  { color: var(--muted); font-size: 14px; }
 
-.btn-donate:hover{
-    background:#0f223b;
+/* ── CTA BANNER ── */
+.causes-cta {
+    background: var(--dark);
+    padding: 72px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
+.causes-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.causes-cta-inner { position: relative; z-index: 1; }
+.causes-cta h2 { font-size: clamp(22px, 3vw, 36px); font-weight: 800; color: #fff; margin-bottom: 12px; }
+.causes-cta p  { color: rgba(255,255,255,0.55); font-size: 15px; max-width: 500px; margin: 0 auto 28px; }
+.causes-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 14px 32px;
+    text-decoration: none;
+    transition: 0.25s;
+    margin: 0 6px;
+}
+.causes-cta-btn:hover { background: #e05500; color: #fff; transform: translateY(-2px); }
+.causes-cta-btn.outline {
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.8);
+}
+.causes-cta-btn.outline:hover { border-color: var(--accent); background: rgba(255,107,0,0.1); color: #fff; }
 
+/* ── RESPONSIVE ── */
+@media (max-width: 576px) {
+    .causes-hero-stat { padding: 12px 16px; }
+    .causes-hero-stats { gap: 0; }
+}
 </style>
 
-<!-- HERO -->
-<section class="causes-hero">
-    <h1>Support a Cause</h1>
-    <p>Every cause you support brings hope, relief, and transformation to someone in need.</p>
-</section>
+<div class="cp-causes-page">
 
-<!-- CAUSES LIST -->
-<section class="section">
-<div class="container">
+    <!-- HERO -->
+    <section class="causes-hero">
+        <div class="causes-hero-bg"></div>
+        <div class="causes-hero-overlay"></div>
 
-<div class="row g-4">
+        <div class="container causes-hero-content">
+            <div class="causes-hero-eyebrow">
+                <i class="bi bi-heart-fill"></i> Active Campaigns
+            </div>
+            <h1>Support a Cause<br>Change a Life</h1>
+            <p class="causes-hero-sub">
+                Every cause you support brings hope, relief, and transformation
+                to someone who needs it most. Browse our active campaigns below.
+            </p>
 
-{% for cause in causes %}
+            <!-- Stats -->
+            <div class="causes-hero-stats">
+                <div class="causes-hero-stat">
+                    <strong>500+</strong>
+                    <span>Lives Impacted</span>
+                </div>
+                <div class="causes-hero-stat">
+                    <strong>15+</strong>
+                    <span>Communities</span>
+                </div>
+                <div class="causes-hero-stat">
+                    <strong>100%</strong>
+                    <span>Transparent</span>
+                </div>
+                <div class="causes-hero-stat">
+                    <strong>24h</strong>
+                    <span>Confirmation</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<div class="col-md-6 col-lg-4">
+    <!-- CAUSES LIST -->
+    <section class="causes-section">
+        <div class="container">
 
-<div class="cause-card">
+            <div class="causes-section-header">
+                <div class="causes-section-eyebrow">
+                    <i class="bi bi-heart-fill"></i> Open Campaigns
+                </div>
+                <h2>Choose Where to Give</h2>
+                <p>Every campaign is verified and managed by the KAVTRANS team. Your donation goes directly to the cause.</p>
+            </div>
 
-<img src="{{ cause.image.url }}" class="cause-img">
+            {% if causes %}
+            <div class="row g-4">
+                {% for cause in causes %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="cause-card-new">
 
-<div class="cause-body d-flex flex-column">
+                        <div class="cause-card-img-wrap">
+                            <img src="{{ cause.image.url }}" alt="{{ cause.title }}">
+                            <span class="cause-card-category">Active</span>
+                        </div>
 
-<h5 class="cause-title">{{ cause.title }}</h5>
+                        <div class="cause-card-body">
+                            <h5 class="cause-card-title">{{ cause.title }}</h5>
+                            <p class="cause-card-desc">{{ cause.description|truncatewords:25 }}</p>
 
-<p>{{ cause.description|truncatewords:25 }}</p>
+                            <!-- Progress -->
+                            <div class="cause-prog-labels">
+                                <span class="cause-prog-raised">${{ cause.amount_raised }} raised</span>
+                                <span class="cause-prog-pct">{{ cause.progress_percentage }}%</span>
+                            </div>
+                            <div class="cause-prog-bar-bg">
+                                <div class="cause-prog-bar-fill" style="width:{{ cause.progress_percentage }}%"></div>
+                            </div>
+                            <div class="cause-prog-goal">Goal: ${{ cause.target_amount }}</div>
 
-<div class="progress mb-2">
-<div class="progress-bar" style="width: {{ cause.progress_percentage }}%;">
+                            <a href="{% url 'donate_amount' cause.id %}" class="cause-donate-btn">
+                                <i class="bi bi-heart-fill"></i> Donate to This Cause
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="causes-empty">
+                <i class="bi bi-heart"></i>
+                <h4>No Active Campaigns</h4>
+                <p>There are no active campaigns at the moment. Check back soon — new causes are added regularly.</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="causes-cta">
+        <div class="container causes-cta-inner">
+            <h2>Can't Find the Right Cause?</h2>
+            <p>Every donation matters. Contact us to learn about upcoming campaigns or to suggest a cause close to your heart.</p>
+            <a href="mailto:donations@kavtrans.com" class="causes-cta-btn">
+                <i class="bi bi-envelope-fill"></i> Contact Us
+            </a>
+            <a href="{% url 'home' %}" class="causes-cta-btn outline">
+                <i class="bi bi-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </section>
+
 </div>
-</div>
-
-<small class="mb-3">
-${{ cause.amount_raised }} raised of ${{ cause.target_amount }}
-</small>
-
-<a href="{% url 'donate_amount' cause.id %}" class="btn btn-donate mt-auto">
-Donate to this Cause
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-</section>
 
 {% endblock %}

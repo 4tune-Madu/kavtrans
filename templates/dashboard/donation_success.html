@@ -1,85 +1,354 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
 
 <style>
-.pending-box{
-    max-width:600px;
-    margin:80px auto;
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
+*, *::before, *::after { box-sizing: border-box; }
+:root { --navy:#162e4d; --dark:#0f172a; --accent:#ff6b00; --light:#f8fafc; --muted:#64748b; --border:#e2e8f0; }
+
+.ds-page {
+    min-height: 100vh;
+    background: var(--light);
+    padding: 0 0 80px;
+    font-family: 'Poppins', sans-serif;
+    animation: dsFade 0.55s cubic-bezier(0.4,0,0.2,1) both;
+}
+@keyframes dsFade { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* Banner — same dark style */
+.ds-banner {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+    padding: 48px 0 40px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+.ds-banner::after { content:""; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+.ds-banner-inner { position:relative; z-index:1; }
+
+/* Completed step pills */
+.dn-step-pills { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:28px; }
+.dn-step { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.4); }
+.dn-step.done  { color:var(--accent); }
+.dn-step-num { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+.dn-step.done .dn-step-num { background:rgba(255,107,0,0.15); border-color:var(--accent); color:var(--accent); }
+.dn-step-line { width:40px; height:1.5px; background:rgba(255,255,255,0.15); margin:0 4px; }
+.dn-step-line.done-line { background: rgba(255,107,0,0.4); }
+
+/* Pending icon ring */
+.ds-icon-ring {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(251,191,36,0.12);
+    border: 2px solid rgba(251,191,36,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    animation: dsPulse 2.5s ease-in-out infinite;
+}
+@keyframes dsPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0.3); }
+    50%      { box-shadow: 0 0 0 14px rgba(251,191,36,0); }
+}
+.ds-icon-ring i { font-size: 40px; color: #fbbf24; }
+
+.ds-banner h1 { font-size: clamp(22px,3vw,34px); font-weight: 800; color: #fff; margin-bottom: 8px; }
+.ds-banner p  { color: rgba(255,255,255,0.55); font-size: 14px; max-width: 480px; margin: 0 auto; }
+
+/* Layout */
+.ds-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 20px 0;
+    align-items: start;
+}
+
+/* Cards */
+.ds-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); border: 1px solid var(--border); overflow: hidden; }
+
+/* Status card — left */
+.ds-status-inner { padding: 28px; }
+.ds-status-inner h4 { font-size: 17px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+.ds-status-inner > p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+
+/* Status badge */
+.ds-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(251,191,36,0.1);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 22px;
+}
+.ds-status-badge i { color: #fbbf24; }
+
+/* Info grid */
+.ds-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+.ds-info-box { background:var(--light); border:1px solid var(--border); border-radius:12px; padding:14px 16px; }
+.ds-info-box-label { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+.ds-info-box-value { font-size:15px; font-weight:800; color:var(--dark); }
+.ds-info-box-value.accent { color:var(--accent); }
+
+/* Timeline */
+.ds-timeline { margin-bottom:26px; }
+.ds-timeline-title { font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+.ds-tl-row { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
+.ds-tl-dot {
+    width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; flex-shrink:0;
+}
+.ds-tl-dot.done    { background:rgba(34,197,94,0.12); color:#16a34a; border:1.5px solid rgba(34,197,94,0.3); }
+.ds-tl-dot.pending { background:rgba(251,191,36,0.12); color:#d97706; border:1.5px solid rgba(251,191,36,0.3); }
+.ds-tl-dot.waiting { background:var(--light); color:var(--muted); border:1.5px solid var(--border); }
+.ds-tl-content strong { display:block; font-size:13px; font-weight:700; color:var(--dark); margin-bottom:2px; }
+.ds-tl-content span  { font-size:12px; color:var(--muted); }
+
+/* CTA buttons */
+.ds-btn-primary {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; background:var(--accent); color:#fff; border:none; border-radius:12px;
+    padding:14px; font-size:14px; font-weight:700; text-decoration:none; transition:0.25s;
+    margin-bottom:10px; font-family:'Poppins',sans-serif;
+}
+.ds-btn-primary:hover { background:#e05500; color:#fff; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,107,0,0.3); }
+
+.ds-btn-outline {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; background:transparent; color:var(--dark); border:1.5px solid var(--border);
+    border-radius:12px; padding:13px; font-size:14px; font-weight:600; text-decoration:none;
+    transition:0.25s; font-family:'Poppins',sans-serif;
+}
+.ds-btn-outline:hover { border-color:var(--accent); color:var(--accent); }
+
+/* Right sidebar */
+.ds-sidebar-inner { padding:24px; }
+.ds-sidebar-title { font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:18px; }
+
+.ds-sidebar-row { display:flex; justify-content:space-between; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); gap:12px; }
+.ds-sidebar-row:last-of-type { border-bottom:none; }
+.ds-sidebar-row span:first-child { font-size:12px; color:var(--muted); flex-shrink:0; }
+.ds-sidebar-row span:last-child  { font-size:13px; font-weight:700; color:var(--dark); text-align:right; }
+.ds-sidebar-row .ds-amount { color:var(--accent); font-size:20px; font-weight:800; }
+
+/* Share card */
+.ds-share { margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
+.ds-share-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.ds-share-btns { display:flex; gap:8px; }
+.ds-share-btn {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:9px 8px; border-radius:10px; font-size:12px; font-weight:700;
+    text-decoration:none; transition:0.2s; border:1.5px solid var(--border); color:var(--dark);
+}
+.ds-share-btn:hover { border-color:var(--accent); color:var(--accent); }
+.ds-share-btn i { font-size:14px; }
+
+/* Impact note */
+.ds-impact-note {
+    background:linear-gradient(135deg, rgba(22,46,77,0.06), rgba(255,107,0,0.04));
+    border:1px solid rgba(255,107,0,0.12);
+    border-radius:14px;
+    padding:18px;
+    margin-top:16px;
     text-align:center;
-    background:#fff;
-    padding:40px;
-    border-radius:15px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
+.ds-impact-note i { font-size:24px; color:var(--accent); margin-bottom:8px; display:block; }
+.ds-impact-note p { font-size:12px; color:var(--muted); line-height:1.6; margin:0; }
+.ds-impact-note strong { color:var(--dark); }
 
-.pending-icon{
-    font-size:70px;
-    color:#f0ad4e;
-    margin-bottom:20px;
+@media (max-width:768px) {
+    .ds-layout { grid-template-columns:1fr; }
+    .ds-info-grid { grid-template-columns:1fr 1fr; }
 }
-
-.pending-title{
-    font-weight:600;
-    color:#162e4d;
-}
-
-.pending-text{
-    color:#555;
-    margin-top:10px;
-}
-
-.btn-main{
-    background:#162e4d;
-    color:white;
-    border:none;
-    padding:12px 25px;
-    border-radius:10px;
-    margin-top:20px;
-    transition:0.3s;
-}
-
-.btn-main:hover{
-    background:#0f223b;
+@media (max-width:400px) {
+    .ds-info-grid { grid-template-columns:1fr; }
 }
 </style>
 
-<div class="pending-box">
+<div class="ds-page">
 
-    <!-- ICON -->
-    <div class="pending-icon">
-        ⏳
+    <!-- BANNER -->
+    <div class="ds-banner">
+        <div class="container ds-banner-inner">
+
+            <!-- All steps done -->
+            <div class="dn-step-pills">
+                <div class="dn-step done">
+                    <div class="dn-step-num"><i class="bi bi-check-lg"></i></div>
+                    Amount
+                </div>
+                <div class="dn-step-line done-line"></div>
+                <div class="dn-step done">
+                    <div class="dn-step-num"><i class="bi bi-check-lg"></i></div>
+                    Payment
+                </div>
+                <div class="dn-step-line done-line"></div>
+                <div class="dn-step done">
+                    <div class="dn-step-num"><i class="bi bi-check-lg"></i></div>
+                    Confirm
+                </div>
+                <div class="dn-step-line done-line"></div>
+                <div class="dn-step done">
+                    <div class="dn-step-num"><i class="bi bi-check-lg"></i></div>
+                    Done
+                </div>
+            </div>
+
+            <!-- Pending icon -->
+            <div class="ds-icon-ring">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+
+            <h1>Payment Pending Confirmation</h1>
+            <p>Thank you for your generosity. Your transaction has been received and is under review.</p>
+
+        </div>
     </div>
 
-    <!-- TITLE -->
-    <h3 class="pending-title">Payment Pending Confirmation</h3>
+    <!-- LAYOUT -->
+    <div class="ds-layout">
 
-    <!-- MESSAGE -->
-    <p class="pending-text">
-        Thank you for your generous donation of 
-        <strong>${{ donation.amount }}</strong> to 
-        <strong>{{ donation.cause.title }}</strong>.
-    </p>
+        <!-- LEFT — Status + actions -->
+        <div class="ds-card">
+            <div class="ds-status-inner">
 
-    <p class="pending-text">
-        Your transaction is currently being reviewed.  
-        Please note that confirmation may take up to <strong>24 hours</strong>.
-    </p>
+                <div class="ds-status-badge">
+                    <i class="bi bi-hourglass-split"></i>
+                    Under Review
+                </div>
 
-    <p class="pending-text">
-        Once verified, you will receive a confirmation notification.
-    </p>
+                <h4>We've received your donation!</h4>
+                <p>
+                    Your generous donation of <strong style="color:var(--accent)">${{ donation.amount }}</strong>
+                    to <strong style="color:var(--navy)">{{ donation.cause.title }}</strong> has been submitted
+                    and is currently being verified by our team. This typically takes up to 24 hours.
+                </p>
 
-    <!-- CTA BUTTON -->
-    <a href="{% url 'donor_details' donation.id %}" class="btn btn-main">
-        Provide Donation Details (Optional)
-    </a>
+                <!-- Info boxes -->
+                <div class="ds-info-grid">
+                    <div class="ds-info-box">
+                        <div class="ds-info-box-label">Amount</div>
+                        <div class="ds-info-box-value accent">${{ donation.amount }}</div>
+                    </div>
+                    <div class="ds-info-box">
+                        <div class="ds-info-box-label">Status</div>
+                        <div class="ds-info-box-value" style="color:#d97706;">Pending</div>
+                    </div>
+                    <div class="ds-info-box" style="grid-column:1/-1">
+                        <div class="ds-info-box-label">Cause</div>
+                        <div class="ds-info-box-value" style="font-size:14px;">{{ donation.cause.title }}</div>
+                    </div>
+                </div>
 
-    <br>
+                <!-- What happens next timeline -->
+                <div class="ds-timeline">
+                    <div class="ds-timeline-title">What happens next</div>
 
-    <a href="{% url 'donations' %}" class="btn btn-outline-dark mt-3">
-        Back to Donations
-    </a>
+                    <div class="ds-tl-row">
+                        <div class="ds-tl-dot done"><i class="bi bi-check-lg"></i></div>
+                        <div class="ds-tl-content">
+                            <strong>Donation submitted</strong>
+                            <span>Your payment details have been received.</span>
+                        </div>
+                    </div>
 
+                    <div class="ds-tl-row">
+                        <div class="ds-tl-dot pending"><i class="bi bi-hourglass-split"></i></div>
+                        <div class="ds-tl-content">
+                            <strong>Under review (up to 24 hours)</strong>
+                            <span>Our team is verifying your transaction.</span>
+                        </div>
+                    </div>
+
+                    <div class="ds-tl-row">
+                        <div class="ds-tl-dot waiting">3</div>
+                        <div class="ds-tl-content">
+                            <strong>Confirmation sent</strong>
+                            <span>You'll receive a notification once verified.</span>
+                        </div>
+                    </div>
+
+                    <div class="ds-tl-row">
+                        <div class="ds-tl-dot waiting">4</div>
+                        <div class="ds-tl-content">
+                            <strong>Impact delivered</strong>
+                            <span>Your contribution reaches those who need it most.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTAs -->
+                <a href="{% url 'donor_details' donation.id %}" class="ds-btn-primary">
+                    <i class="bi bi-pencil-fill"></i>
+                    Provide Donation Details <span style="font-size:12px;opacity:0.8;">(Optional)</span>
+                </a>
+                <a href="{% url 'home' %}" class="ds-btn-outline">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Donations
+                </a>
+
+            </div>
+        </div>
+
+        <!-- RIGHT — Summary + share -->
+        <div class="ds-card">
+            <div class="ds-sidebar-inner">
+                <div class="ds-sidebar-title">Donation Summary</div>
+
+                <div class="ds-sidebar-row">
+                    <span>Cause</span>
+                    <span>{{ donation.cause.title }}</span>
+                </div>
+                <div class="ds-sidebar-row">
+                    <span>Status</span>
+                    <span style="color:#d97706;">⏳ Pending</span>
+                </div>
+                <div class="ds-sidebar-row">
+                    <span>Review time</span>
+                    <span>Up to 24 hrs</span>
+                </div>
+                <div class="ds-sidebar-row">
+                    <span>Total donated</span>
+                    <span class="ds-amount">${{ donation.amount }}</span>
+                </div>
+
+                <!-- Share -->
+                <div class="ds-share">
+                    <div class="ds-share-title">Spread the word</div>
+                    <div class="ds-share-btns">
+                        <a href="https://twitter.com/intent/tweet?text=I+just+donated+to+{{ donation.cause.title|urlencode }}+via+KAVTRANS!+Every+bit+helps.+%23KAVTRANS+%23GiveBack" target="_blank" class="ds-share-btn">
+                            <i class="bi bi-twitter-x"></i> Share
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php" target="_blank" class="ds-share-btn">
+                            <i class="bi bi-facebook"></i> Share
+                        </a>
+                        <a href="whatsapp://send?text=I+just+donated+to+{{ donation.cause.title|urlencode }}+via+KAVTRANS.+Join+me!" class="ds-share-btn">
+                            <i class="bi bi-whatsapp"></i> Share
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Impact note -->
+                <div class="ds-impact-note">
+                    <i class="bi bi-heart-fill"></i>
+                    <p>Your <strong>${{ donation.amount }}</strong> donation is making a real difference. Thank you for being part of something bigger than yourself.</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
 </div>
 
 {% endblock %}

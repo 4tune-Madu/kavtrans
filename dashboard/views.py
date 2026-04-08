@@ -296,3 +296,23 @@ def delete_payment_account(request, account_type, id):
     messages.success(request, "Payment account deleted.")
     return redirect("payment_accounts")
 
+from django.shortcuts import render, redirect
+from core.models import Service
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def add_service(request):
+    if request.method == "POST":
+        Service.objects.create(
+            title=request.POST.get("title"),
+            slug=request.POST.get("slug"),
+            short_description=request.POST.get("short_description"),
+            full_description=request.POST.get("full_description"),
+            feature_1=request.POST.get("feature_1"),
+            feature_2=request.POST.get("feature_2"),
+            feature_3=request.POST.get("feature_3"),
+            feature_4=request.POST.get("feature_4"),
+        )
+        return redirect("dashboard_home")  # or wherever your admin homepage is
+
+    return render(request, "dashboard/add_service.html")

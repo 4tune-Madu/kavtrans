@@ -1,102 +1,424 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
 
 <style>
-.thankyou-box{
-    max-width:700px;
-    margin:80px auto;
-    background:#fff;
-    padding:50px 40px;
-    border-radius:15px;
-    box-shadow:0 15px 35px rgba(0,0,0,0.1);
-    text-align:center;
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+    --navy:   #162e4d;
+    --dark:   #0f172a;
+    --accent: #ff6b00;
+    --light:  #f8fafc;
+    --muted:  #64748b;
+    --border: #e2e8f0;
 }
 
-.thankyou-icon{
-    font-size:70px;
-    color:#28a745;
-    margin-bottom:20px;
+.ty-page {
+    min-height: 100vh;
+    background: var(--light);
+    font-family: 'Poppins', sans-serif;
+    animation: tyFade 0.55s cubic-bezier(0.4,0,0.2,1) both;
+    padding-bottom: 80px;
+}
+@keyframes tyFade {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
 }
 
-.thankyou-title{
-    color:#162e4d;
-    font-weight:700;
+/* ── BANNER ── */
+.ty-banner {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+    padding: 60px 0 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.ty-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+.ty-banner-inner { position: relative; z-index: 1; }
+
+/* Animated heart icon */
+.ty-icon-ring {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: rgba(255,107,0,0.12);
+    border: 2px solid rgba(255,107,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+    animation: tyHeartPulse 2.5s ease-in-out infinite;
+}
+@keyframes tyHeartPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(255,107,0,0.25); }
+    50%      { box-shadow: 0 0 0 16px rgba(255,107,0,0); }
+}
+.ty-icon-ring i { font-size: 38px; color: var(--accent); }
+
+.ty-banner h1 {
+    font-size: clamp(24px, 3.5vw, 40px);
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+.ty-banner p {
+    color: rgba(255,255,255,0.55);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.7;
 }
 
-.thankyou-text{
-    color:#555;
-    font-size:16px;
-    margin-top:15px;
-    line-height:1.7;
+/* ── MAIN LAYOUT ── */
+.ty-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 40px 20px 0;
+    align-items: start;
 }
 
-.highlight{
-    color:#162e4d;
-    font-weight:600;
+/* ── CARD ── */
+.ty-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.ty-card-inner { padding: 28px; }
+.ty-card-inner h4 { font-size: 17px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+.ty-card-inner > p { font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 0; }
+
+/* ── COMMITMENT SECTION ── */
+.ty-commit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 22px 0;
+}
+.ty-commit-item {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.ty-commit-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,107,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.ty-commit-icon i { font-size: 15px; color: var(--accent); }
+.ty-commit-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+.ty-commit-text span  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ── BUTTONS ── */
+.ty-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 14px;
+    text-decoration: none;
+    transition: 0.25s;
+    margin-bottom: 10px;
+}
+.ty-btn-primary:hover {
+    background: #e05500;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,107,0,0.3);
+}
+.ty-btn-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: transparent;
+    color: var(--dark);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 13px;
+    text-decoration: none;
+    border: 1.5px solid var(--border);
+    transition: 0.25s;
+}
+.ty-btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
-.btn-main{
-    background:#162e4d;
-    color:white;
-    border:none;
-    padding:12px 25px;
-    border-radius:10px;
-    margin-top:25px;
-    transition:0.3s;
+/* ── SIDEBAR ── */
+.ty-sidebar-inner { padding: 24px; }
+.ty-sidebar-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
 }
 
-.btn-main:hover{
-    background:#0f223b;
+/* Impact quote */
+.ty-impact-quote {
+    background: linear-gradient(135deg, rgba(22,46,77,0.05), rgba(255,107,0,0.04));
+    border: 1px solid rgba(255,107,0,0.12);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 14px 14px 0;
+    padding: 18px 18px 18px 20px;
+    margin-bottom: 20px;
+}
+.ty-impact-quote p {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--navy);
+    line-height: 1.7;
+    margin: 0 0 8px;
+}
+.ty-impact-quote cite {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: normal;
+    font-weight: 600;
 }
 
-.btn-outline{
-    margin-top:10px;
+/* What's next steps */
+.ty-next-steps { margin-bottom: 20px; }
+.ty-next-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+.ty-next-step:last-child { border-bottom: none; }
+.ty-next-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,107,0,0.1);
+    border: 1.5px solid rgba(255,107,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.ty-next-step p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0;
+}
+.ty-next-step p strong { color: var(--dark); }
+
+/* Share section */
+.ty-share { padding-top: 16px; border-top: 1px solid var(--border); }
+.ty-share-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+.ty-share-btns { display: flex; gap: 8px; }
+.ty-share-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 9px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1.5px solid var(--border);
+    color: var(--dark);
+    transition: 0.2s;
+}
+.ty-share-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .ty-layout { grid-template-columns: 1fr; }
+    .ty-commit-grid { grid-template-columns: 1fr; }
 }
 </style>
 
-<div class="thankyou-box">
+<div class="ty-page">
 
-    <!-- ICON -->
-    <div class="thankyou-icon">
-        ❤️
+    <!-- BANNER -->
+    <div class="ty-banner">
+        <div class="container ty-banner-inner">
+
+            <div class="ty-icon-ring">
+                <i class="bi bi-heart-fill"></i>
+            </div>
+
+            <h1>Thank You for Your Generosity</h1>
+            <p>Your donation is more than a contribution — it is a powerful act of kindness that will transform real lives.</p>
+
+        </div>
     </div>
 
-    <!-- TITLE -->
-    <h2 class="thankyou-title">Thank You for Your Generosity</h2>
+    <!-- LAYOUT -->
+    <div class="ty-layout">
 
-    <!-- MESSAGE -->
-    <p class="thankyou-text">
-        We sincerely appreciate your willingness to support our mission.  
-        Your donation is more than just a contribution — it is a powerful act of kindness 
-        that helps us reach individuals and communities in need.
-    </p>
+        <!-- LEFT — main message -->
+        <div>
 
-    <p class="thankyou-text">
-        At <span class="highlight">KAVTRANS</span>, we are deeply committed to ensuring that every donation 
-        is used <span class="highlight">transparently</span>, <span class="highlight">responsibly</span>, 
-        and for the <span class="highlight">right purpose</span>.
-    </p>
+            <div class="ty-card">
+                <div class="ty-card-inner">
+                    <h4>Your Donation Is Making a Difference</h4>
+                    <p>
+                        We sincerely appreciate your willingness to support our mission. At
+                        <strong style="color:var(--navy);">KAVTRANS</strong>, we are deeply committed to ensuring
+                        that every donation is used <strong style="color:var(--navy);">transparently</strong>,
+                        <strong style="color:var(--navy);">responsibly</strong>, and for the
+                        <strong style="color:var(--navy);">right purpose</strong>.
+                    </p>
+                    <p style="margin-top:14px;font-size:14px;color:var(--muted);line-height:1.75;">
+                        Your payment is currently under review. Once it has been successfully verified,
+                        we will send you a confirmation message via the contact details you provided.
+                        Thank you for believing in what we do and for being part of something meaningful.
+                    </p>
 
-    <p class="thankyou-text">
-        Your payment is currently under review. Once it has been successfully verified, 
-        we will send you a confirmation message via the email address you provided.
-    </p>
+                    <!-- Our commitments -->
+                    <div class="ty-commit-grid">
+                        <div class="ty-commit-item">
+                            <div class="ty-commit-icon"><i class="bi bi-shield-fill-check"></i></div>
+                            <div class="ty-commit-text">
+                                <strong>100% Transparent</strong>
+                                <span>Every dollar is tracked and accounted for.</span>
+                            </div>
+                        </div>
+                        <div class="ty-commit-item">
+                            <div class="ty-commit-icon"><i class="bi bi-people-fill"></i></div>
+                            <div class="ty-commit-text">
+                                <strong>Direct Impact</strong>
+                                <span>Funds reach beneficiaries without delay.</span>
+                            </div>
+                        </div>
+                        <div class="ty-commit-item">
+                            <div class="ty-commit-icon"><i class="bi bi-receipt"></i></div>
+                            <div class="ty-commit-text">
+                                <strong>Donation Receipt</strong>
+                                <span>Sent to you upon verification.</span>
+                            </div>
+                        </div>
+                        <div class="ty-commit-item">
+                            <div class="ty-commit-icon"><i class="bi bi-clock-fill"></i></div>
+                            <div class="ty-commit-text">
+                                <strong>24h Confirmation</strong>
+                                <span>Our team reviews within 24 hours.</span>
+                            </div>
+                        </div>
+                    </div>
 
-    <p class="thankyou-text">
-        Thank you for believing in what we do and for being part of something meaningful.
-    </p>
+                    <!-- Buttons -->
+                    <a href="{% url 'causes_page' %}" class="ty-btn-primary">
+                        <i class="bi bi-heart-fill"></i> Explore More Causes
+                    </a>
+                    <a href="{% url 'home' %}" class="ty-btn-outline">
+                        <i class="bi bi-house-fill"></i> Return to Home
+                    </a>
 
-    <!-- BUTTONS -->
-    <a href="{% url 'donations' %}" class="btn btn-main">
-        Explore More Causes
-    </a>
+                </div>
+            </div>
 
-    <br>
+        </div>
 
-    <a href="/" class="btn btn-outline-dark btn-outline">
-        Return Home
-    </a>
+        <!-- RIGHT — sidebar -->
+        <div>
 
+            <div class="ty-card">
+                <div class="ty-sidebar-inner">
+
+                    <div class="ty-sidebar-label">A Word of Thanks</div>
+
+                    <!-- Pull quote -->
+                    <div class="ty-impact-quote">
+                        <p>"Generosity is not about the size of the gift — it is about the size of the heart behind it."</p>
+                        <cite>— KAVTRANS Donation Team</cite>
+                    </div>
+
+                    <!-- What happens next -->
+                    <div class="ty-next-steps">
+                        <div class="ty-sidebar-label">What Happens Next</div>
+                        <div class="ty-next-step">
+                            <div class="ty-next-dot">1</div>
+                            <p><strong>Payment submitted</strong> — your donation has been received and logged.</p>
+                        </div>
+                        <div class="ty-next-step">
+                            <div class="ty-next-dot">2</div>
+                            <p><strong>Under review</strong> — our team verifies within 24 hours.</p>
+                        </div>
+                        <div class="ty-next-step">
+                            <div class="ty-next-dot">3</div>
+                            <p><strong>Confirmation sent</strong> — you'll be notified once approved.</p>
+                        </div>
+                        <div class="ty-next-step">
+                            <div class="ty-next-dot">4</div>
+                            <p><strong>Impact delivered</strong> — funds reach those who need it most.</p>
+                        </div>
+                    </div>
+
+                    <!-- Share -->
+                    <div class="ty-share">
+                        <div class="ty-share-label">Inspire Others to Give</div>
+                        <div class="ty-share-btns">
+                            <a href="https://twitter.com/intent/tweet?text=I+just+made+a+donation+via+KAVTRANS!+Join+me+in+making+a+difference.+%23KAVTRANS+%23GiveBack" target="_blank" class="ty-share-btn">
+                                <i class="bi bi-twitter-x"></i> Tweet
+                            </a>
+                            <a href="https://www.facebook.com/sharer/sharer.php" target="_blank" class="ty-share-btn">
+                                <i class="bi bi-facebook"></i> Share
+                            </a>
+                            <a href="whatsapp://send?text=I+just+donated+to+a+great+cause+via+KAVTRANS.+Check+it+out!" class="ty-share-btn">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 </div>
 
 {% endblock %}

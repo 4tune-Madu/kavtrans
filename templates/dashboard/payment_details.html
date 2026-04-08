@@ -1,40 +1,372 @@
 {% extends "dashboard/dashboard_base.html" %}
+{% load static %}
+
 {% block content %}
-<div class="container" style="max-width:700px; margin:50px auto;">
 
-    <h3 class="fw-bold text-center">{{ cause.title }}</h3>
-    <p class="text-center mb-4">Amount: <strong>${{ amount }}</strong></p>
+<style>
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
+*, *::before, *::after { box-sizing: border-box; }
+:root { --navy:#162e4d; --dark:#0f172a; --accent:#ff6b00; --light:#f8fafc; --muted:#64748b; --border:#e2e8f0; }
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+.pd-page { min-height:100vh; background:var(--light); padding:0 0 80px; font-family:'Poppins',sans-serif; animation:pdFade 0.5s cubic-bezier(0.4,0,0.2,1) both; }
+@keyframes pdFade { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
-    <div class="card p-4 shadow-sm">
-        <h5 class="fw-bold mb-3 text-center">Payment Details ({{ payment_type|title }})</h5>
-        <ul class="list-unstyled">
-            {% if payment_type == 'bank' %}
-                <li><strong>Bank Name:</strong> {{ account.bank_name }}</li>
-                <li><strong>Account Name:</strong> {{ account.account_name }}</li>
-                <li><strong>Account Number:</strong> {{ account.account_number }}</li>
-                <li><strong>SWIFT Code:</strong> {{ account.swift_code }}</li>
-                <li><strong>Branch:</strong> {{ account.branch }}</li>
-                <li><strong>Currency:</strong> {{ account.currency }}</li>
-                {% if account.notes %}<li><strong>Notes:</strong> {{ account.notes }}</li>{% endif %}
-            {% elif payment_type == 'crypto' %}
-                <li><strong>Currency:</strong> {{ account.get_currency_display }}</li>
-                <li><strong>Wallet Address:</strong> {{ account.wallet_address }}</li>
-                <li><strong>Network:</strong> {{ account.network }}</li>
-                {% if account.notes %}<li><strong>Notes:</strong> {{ account.notes }}</li>{% endif %}
-            {% elif payment_type == 'paypal' %}
-                <li><strong>Email:</strong> {{ account.email }}</li>
-                {% if account.notes %}<li><strong>Notes:</strong> {{ account.notes }}</li>{% endif %}
-            {% endif %}
-        </ul>
+/* Banner */
+.pd-banner { background:linear-gradient(135deg,var(--dark) 0%,var(--navy) 100%); padding:48px 0 52px; position:relative; overflow:hidden; }
+.pd-banner::after { content:""; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+.pd-banner-inner { position:relative; z-index:1; }
 
-        <form method="POST">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-dark w-100 py-2 mt-3">Confirm Payment</button>
-        </form>
+/* Step pills */
+.dn-step-pills { display:flex; align-items:center; justify-content:center; gap:0; margin-bottom:28px; }
+.dn-step { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.4); }
+.dn-step.active { color:#fff; }
+.dn-step.done   { color:var(--accent); }
+.dn-step-num { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+.dn-step.active .dn-step-num { background:var(--accent); border-color:var(--accent); color:#fff; }
+.dn-step.done   .dn-step-num { background:rgba(255,107,0,0.15); border-color:var(--accent); color:var(--accent); }
+.dn-step-line { width:40px; height:1.5px; background:rgba(255,255,255,0.15); margin:0 4px; }
+
+.pd-banner h1 { font-size:clamp(22px,3vw,34px); font-weight:800; color:#fff; text-align:center; margin-bottom:12px; }
+.pd-amount-pill { display:inline-flex; align-items:center; gap:8px; background:rgba(255,107,0,0.15); border:1px solid rgba(255,107,0,0.3); border-radius:30px; padding:6px 18px; font-size:14px; font-weight:700; color:#fff; }
+.pd-amount-pill i { color:var(--accent); }
+
+/* Layout */
+.pd-layout { display:grid; grid-template-columns:1fr 300px; gap:24px; max-width:900px; margin:0 auto; padding:32px 20px 0; align-items:start; }
+
+/* Cards */
+.pd-card { background:#fff; border-radius:20px; box-shadow:0 4px 24px rgba(0,0,0,0.07); border:1px solid var(--border); overflow:hidden; }
+
+/* Error */
+.pd-error { background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.25); border-radius:10px; padding:12px 16px; font-size:13px; color:#dc2626; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+
+/* Method badge */
+.pd-method-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+.pd-method-badge.bank   { background:rgba(22,46,77,0.08);  color:var(--navy); }
+.pd-method-badge.crypto { background:rgba(247,147,26,0.1); color:#b45309; }
+.pd-method-badge.paypal { background:rgba(0,48,135,0.08);  color:#003087; }
+
+/* Detail rows */
+.pd-card-inner { padding:28px; }
+.pd-card-inner h4 { font-size:17px; font-weight:800; color:var(--dark); margin-bottom:6px; }
+.pd-card-inner > p { font-size:13px; color:var(--muted); margin-bottom:22px; }
+
+.pd-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+.pd-detail-row {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+}
+.pd-detail-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,107,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.pd-detail-icon i { color: var(--accent); font-size: 15px; }
+.pd-detail-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.pd-detail-value { font-size: 14px; font-weight: 700; color: var(--dark); word-break: break-all; }
+
+/* Copy button */
+.pd-copy-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: 'Poppins', sans-serif;
+}
+.pd-copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Important notice */
+.pd-notice {
+    background: rgba(255,107,0,0.06);
+    border: 1px solid rgba(255,107,0,0.2);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+.pd-notice i { color: var(--accent); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.pd-notice p { font-size: 13px; color: #78350f; line-height: 1.6; margin: 0; }
+.pd-notice strong { color: #92400e; }
+
+/* Confirm button */
+.pd-confirm-btn {
+    width:100%; background:var(--accent); color:#fff; border:none; border-radius:12px;
+    padding:15px; font-size:15px; font-weight:700; cursor:pointer; transition:0.25s;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    font-family:'Poppins',sans-serif;
+}
+.pd-confirm-btn:hover { background:#e05500; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,107,0,0.3); }
+
+.pd-back { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); text-decoration:none; margin-top:14px; transition:0.2s; }
+.pd-back:hover { color:var(--accent); }
+
+/* Sidebar summary */
+.pd-summary { padding:24px; }
+.pd-summary-title { font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:18px; }
+.pd-summary-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+.pd-summary-row:last-child { border-bottom:none; }
+.pd-summary-row span:first-child { font-size:13px; color:var(--muted); }
+.pd-summary-row span:last-child  { font-size:14px; font-weight:700; color:var(--dark); }
+.pd-summary-total span:last-child { color:var(--accent); font-size:18px; }
+
+.pd-steps-note { margin-top:20px; padding-top:18px; border-top:1px solid var(--border); }
+.pd-steps-note-title { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+.pd-step-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:12px; }
+.pd-step-dot { width:22px; height:22px; border-radius:50%; background:rgba(255,107,0,0.1); border:1.5px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--accent); flex-shrink:0; margin-top:1px; }
+.pd-step-item p { font-size:12px; color:var(--muted); line-height:1.5; margin:0; }
+
+@media (max-width:768px) { .pd-layout { grid-template-columns:1fr; } }
+</style>
+
+<div class="pd-page">
+
+    <!-- BANNER -->
+    <div class="pd-banner">
+        <div class="container pd-banner-inner">
+            <div class="dn-step-pills">
+                <div class="dn-step done">
+                    <div class="dn-step-num"><i class="bi bi-check-lg"></i></div>
+                    Amount
+                </div>
+                <div class="dn-step-line"></div>
+                <div class="dn-step done">
+                    <div class="dn-step-num"><i class="bi bi-check-lg"></i></div>
+                    Payment
+                </div>
+                <div class="dn-step-line"></div>
+                <div class="dn-step active">
+                    <div class="dn-step-num">3</div>
+                    Confirm
+                </div>
+                <div class="dn-step-line"></div>
+                <div class="dn-step">
+                    <div class="dn-step-num">4</div>
+                    Done
+                </div>
+            </div>
+
+            <h1>Payment Details</h1>
+            <div style="text-align:center;margin-top:12px;">
+                <span class="pd-amount-pill">
+                    <i class="bi bi-heart-fill"></i>
+                    {{ cause.title }} &nbsp;·&nbsp; ${{ amount }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="pd-layout">
+
+        <!-- LEFT — Payment details -->
+        <div class="pd-card">
+            <div class="pd-card-inner">
+
+                {% if error %}
+                <div class="pd-error"><i class="bi bi-exclamation-circle-fill"></i> {{ error }}</div>
+                {% endif %}
+
+                <!-- Method badge -->
+                {% if payment_type == 'bank' %}
+                <div class="pd-method-badge bank"><i class="bi bi-bank"></i> Bank Transfer</div>
+                {% elif payment_type == 'crypto' %}
+                <div class="pd-method-badge crypto"><i class="bi bi-currency-bitcoin"></i> Cryptocurrency</div>
+                {% elif payment_type == 'paypal' %}
+                <div class="pd-method-badge paypal"><i class="bi bi-paypal"></i> PayPal</div>
+                {% endif %}
+
+                <h4>Send Your Payment To</h4>
+                <p>Use the details below to complete your transfer. Once sent, click "Confirm Payment" to notify us.</p>
+
+                <!-- Detail rows -->
+                <div class="pd-detail-grid">
+
+                    {% if payment_type == 'bank' %}
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-building"></i></div>
+                        <div><div class="pd-detail-label">Bank Name</div><div class="pd-detail-value">{{ account.bank_name }}</div></div>
+                    </div>
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-person-fill"></i></div>
+                        <div><div class="pd-detail-label">Account Name</div><div class="pd-detail-value">{{ account.account_name }}</div></div>
+                    </div>
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-credit-card-fill"></i></div>
+                        <div style="flex:1"><div class="pd-detail-label">Account Number</div><div class="pd-detail-value">{{ account.account_number }}</div></div>
+                        <button class="pd-copy-btn" onclick="copyText('{{ account.account_number }}', this)">Copy</button>
+                    </div>
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-globe2"></i></div>
+                        <div><div class="pd-detail-label">SWIFT / BIC Code</div><div class="pd-detail-value">{{ account.swift_code }}</div></div>
+                    </div>
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                        <div><div class="pd-detail-label">Branch</div><div class="pd-detail-value">{{ account.branch }}</div></div>
+                    </div>
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-currency-exchange"></i></div>
+                        <div><div class="pd-detail-label">Currency</div><div class="pd-detail-value">{{ account.currency }}</div></div>
+                    </div>
+                    {% if account.notes %}
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-chat-left-text-fill"></i></div>
+                        <div><div class="pd-detail-label">Notes</div><div class="pd-detail-value">{{ account.notes }}</div></div>
+                    </div>
+                    {% endif %}
+
+                    {% elif payment_type == 'crypto' %}
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-currency-bitcoin"></i></div>
+                        <div><div class="pd-detail-label">Currency</div><div class="pd-detail-value">{{ account.get_currency_display }}</div></div>
+                    </div>
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-wallet2"></i></div>
+                        <div style="flex:1"><div class="pd-detail-label">Wallet Address</div><div class="pd-detail-value" style="font-size:12px;font-family:monospace;">{{ account.wallet_address }}</div></div>
+                        <button class="pd-copy-btn" onclick="copyText('{{ account.wallet_address }}', this)">Copy</button>
+                    </div>
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-diagram-3-fill"></i></div>
+                        <div><div class="pd-detail-label">Network</div><div class="pd-detail-value">{{ account.network }}</div></div>
+                    </div>
+                    {% if account.notes %}
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-chat-left-text-fill"></i></div>
+                        <div><div class="pd-detail-label">Notes</div><div class="pd-detail-value">{{ account.notes }}</div></div>
+                    </div>
+                    {% endif %}
+
+                    {% elif payment_type == 'paypal' %}
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-paypal"></i></div>
+                        <div style="flex:1"><div class="pd-detail-label">PayPal Email</div><div class="pd-detail-value">{{ account.email }}</div></div>
+                        <button class="pd-copy-btn" onclick="copyText('{{ account.email }}', this)">Copy</button>
+                    </div>
+                    {% if account.notes %}
+                    <div class="pd-detail-row">
+                        <div class="pd-detail-icon"><i class="bi bi-chat-left-text-fill"></i></div>
+                        <div><div class="pd-detail-label">Notes</div><div class="pd-detail-value">{{ account.notes }}</div></div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+
+                </div>
+
+                <!-- Important notice -->
+                <div class="pd-notice">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <p>Please send <strong>exactly ${{ amount }}</strong> to the account above. Once payment is sent, click "Confirm Payment" below — do <strong>not</strong> close this page before confirming.</p>
+                </div>
+
+                <!-- Confirm form -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="pd-confirm-btn">
+                        <i class="bi bi-check-circle-fill"></i>
+                        I Have Sent the Payment — Confirm
+                    </button>
+                </form>
+
+                <a href="javascript:history.back()" class="pd-back">
+                    <i class="bi bi-arrow-left"></i> Go back &amp; change method
+                </a>
+
+            </div>
+        </div>
+
+        <!-- RIGHT — Summary sidebar -->
+        <div class="pd-card">
+            <div class="pd-summary">
+                <div class="pd-summary-title">Donation Summary</div>
+
+                <div class="pd-summary-row">
+                    <span>Cause</span>
+                    <span style="text-align:right;max-width:140px;font-size:13px;">{{ cause.title }}</span>
+                </div>
+                <div class="pd-summary-row">
+                    <span>Method</span>
+                    <span>{{ payment_type|title }}</span>
+                </div>
+                <div class="pd-summary-row pd-summary-total">
+                    <span>Amount</span>
+                    <span>${{ amount }}</span>
+                </div>
+
+                <div class="pd-steps-note">
+                    <div class="pd-steps-note-title">What happens next</div>
+                    <div class="pd-step-item">
+                        <div class="pd-step-dot">1</div>
+                        <p>Send your payment using the details on the left.</p>
+                    </div>
+                    <div class="pd-step-item">
+                        <div class="pd-step-dot">2</div>
+                        <p>Click "Confirm Payment" once the transfer is done.</p>
+                    </div>
+                    <div class="pd-step-item">
+                        <div class="pd-step-dot">3</div>
+                        <p>Our team verifies and confirms within 24 hours.</p>
+                    </div>
+                    <div class="pd-step-item">
+                        <div class="pd-step-dot">4</div>
+                        <p>You receive a confirmation notification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script>
+function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.color = '#22c55e';
+        btn.style.borderColor = '#22c55e';
+        setTimeout(() => {
+            btn.textContent = orig;
+            btn.style.color = '';
+            btn.style.borderColor = '';
+        }, 2000);
+    });
+}
+</script>
+
 {% endblock %}

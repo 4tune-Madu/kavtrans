@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* Page */
+.add-service-page {
+    min-height: 100vh;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+/* Card */
+.add-service-card {
+    width: 100%;
+    max-width: 720px;
+    background: #fff;
+    border-radius: 18px;
+    padding: 36px 34px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.add-service-header {
+    margin-bottom: 24px;
+}
+
+.add-service-header h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+
+.add-service-header p {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* Warning box */
+.warning-box {
+    background: rgba(255,107,0,0.1);
+    border: 1px solid rgba(255,107,0,0.25);
+    color: #b45309;
+    font-size: 13px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #ff6b00;
+}
+
+/* Button */
+.btn-submit {
+    width: 100%;
+    background: #ff6b00;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: 0.25s;
+}
+
+.btn-submit:hover {
+    background: #e05500;
+}
+
+/* Back link */
+.back-link {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.back-link:hover {
+    color: #ff6b00;
+}
+</style>
+
+<div class="add-service-page">
+
+    <div class="add-service-card">
+
+        <div class="add-service-header">
+            <h2>Add New Service</h2>
+            <p>Fill in the details below to create a new service.</p>
+        </div>
+
+        <!-- ⚠️ WARNING -->
+        <div class="warning-box">
+            ⚠️ Do not do anything on this page if you're unsure. Just go back.
+        </div>
+
+         <div class="warning-box">
+            ⚠️ This page renders the services read more, do not change anything or input anything, its just for the admin..
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label>Slug</label>
+                <input type="text" name="slug" placeholder="e.g. domestic-courier" required>
+            </div>
+
+            <div class="form-group">
+                <label>Short Description</label>
+                <textarea name="short_description" rows="2"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Full Description</label>
+                <textarea name="full_description" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Feature 1</label>
+                <input type="text" name="feature_1">
+            </div>
+
+            <div class="form-group">
+                <label>Feature 2</label>
+                <input type="text" name="feature_2">
+            </div>
+
+            <div class="form-group">
+                <label>Feature 3</label>
+                <input type="text" name="feature_3">
+            </div>
+
+            <div class="form-group">
+                <label>Feature 4</label>
+                <input type="text" name="feature_4">
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Save Service
+            </button>
+        </form>
+
+        <a href="{% url 'dashboard_home' %}" class="back-link">
+            ← Go back
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

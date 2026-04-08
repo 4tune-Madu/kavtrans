@@ -308,34 +308,15 @@ def donation_thank_you(request):
 
 from django.shortcuts import render
 
-def service_detail(request, service_name):
-    # temporary content (we’ll improve later)
-    services = {
-        "domestic-courier": {
-            "title": "Domestic Courier",
-            "description": "Fast, secure delivery across the country."
-        },
-        "international-shipping": {
-            "title": "International Shipping",
-            "description": "We ship worldwide with full customs handling."
-        },
-        "warehousing-storage": {
-            "title": "Warehousing & Storage",
-            "description": "Secure and scalable storage solutions."
-        },
-        "express-delivery": {
-            "title": "Express Delivery",
-            "description": "Ultra-fast delivery for urgent shipments."
-        },
-        "freight-forwarding": {
-            "title": "Freight Forwarding",
-            "description": "Global freight solutions across air, sea, and land."
-        },
-    }
+from django.shortcuts import render, get_object_or_404
+from .models import Service
 
-    service = services.get(service_name)
+def service_detail(request, service_name):
+    service = get_object_or_404(Service, slug=service_name)
 
     return render(request, "services/detail.html", {
-        "service": service,
-        "service_name": service_name
+        "service": service
     })
+    print("Service fetched:", service)
+
+

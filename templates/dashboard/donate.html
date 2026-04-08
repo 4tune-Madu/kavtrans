@@ -3,143 +3,497 @@
 
 {% block content %}
 
-<div class="container donate-container">
+<style>
+/* ══════════════════════════════════════════════
+   BOOTSTRAP ICONS
+══════════════════════════════════════════════ */
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
 
-    <!-- HEADER CARD -->
-    <div class="donate-card text-center">
+*, *::before, *::after { box-sizing: border-box; }
 
-        <h2 class="fw-bold mb-2">{{ cause.title }}</h2>
-        <p class="text-muted">{{ cause.description }}</p>
+:root {
+    --navy:   #162e4d;
+    --dark:   #0f172a;
+    --accent: #ff6b00;
+    --light:  #f8fafc;
+    --muted:  #64748b;
+    --border: #e2e8f0;
+}
 
-        <!-- PROGRESS INFO -->
-        <div class="mt-3">
-            <span class="amount">${{ cause.amount_raised }}</span>
-            <small class="text-muted">raised of ${{ cause.target_amount }}</small>
-        </div>
+/* ── PAGE ── */
+.dn-page {
+    min-height: 100vh;
+    background: var(--light);
+    padding: 0 0 80px;
+    font-family: 'Poppins', sans-serif;
+    animation: dnFadeIn 0.5s cubic-bezier(0.4,0,0.2,1) both;
+}
+@keyframes dnFadeIn {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+}
 
-        <!-- PROGRESS BAR -->
-        <div class="progress mt-3">
-            <div class="progress-bar"
-                 style="width: {{ cause.progress_percentage }}%;">
-                {{ cause.progress_percentage }}%
-            </div>
-        </div>
+/* ── STEP HEADER BANNER ── */
+.dn-banner {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+    padding: 48px 0 40px;
+    position: relative;
+    overflow: hidden;
+}
+.dn-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.dn-banner-inner { position: relative; z-index: 1; }
 
-    </div>
+.dn-step-pills {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 28px;
+}
+.dn-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+}
+.dn-step.active { color: #fff; }
+.dn-step.done   { color: var(--accent); }
+.dn-step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.dn-step.active .dn-step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+.dn-step.done   .dn-step-num { background: rgba(255,107,0,0.15); border-color: var(--accent); color: var(--accent); }
+.dn-step-line {
+    width: 40px;
+    height: 1.5px;
+    background: rgba(255,255,255,0.15);
+    margin: 0 4px;
+}
 
-    <!-- DONATION FORM -->
-    <div class="donate-card mt-4">
+.dn-banner h1 {
+    font-size: clamp(22px, 3vw, 34px);
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.dn-banner p {
+    text-align: center;
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    max-width: 500px;
+    margin: 0 auto;
+}
 
-        <h4 class="text-center fw-bold mb-4">Make a Donation</h4>
+/* ── LAYOUT ── */
+.dn-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 28px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 32px 20px 0;
+    align-items: start;
+}
 
-        <form method="POST">
-            {% csrf_token %}
+/* ── CARDS ── */
+.dn-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
 
-            {% if error %}
-                <div class="alert alert-danger text-center">
-                    {{ error }}
+/* ── CAUSE CARD (right sidebar) ── */
+.dn-cause-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+.dn-cause-body { padding: 22px; }
+.dn-cause-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+.dn-cause-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 18px;
+}
+
+/* Progress */
+.dn-prog-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 7px;
+}
+.dn-prog-raised {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--navy);
+}
+.dn-prog-raised small {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-left: 4px;
+}
+.dn-prog-pct {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+}
+.dn-prog-bar-bg {
+    background: #e2e8f0;
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.dn-prog-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #ff9500);
+    border-radius: 10px;
+    transition: width 1.2s ease;
+}
+.dn-prog-goal {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+}
+
+/* Trust badges */
+.dn-trust {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+}
+.dn-trust-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted);
+}
+.dn-trust-row i { color: var(--accent); font-size: 14px; width: 16px; }
+
+/* ── FORM CARD (left main) ── */
+.dn-form-header {
+    padding: 28px 28px 0;
+}
+.dn-form-header h4 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+.dn-form-header p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+}
+.dn-form-body { padding: 24px 28px 28px; }
+
+/* Quick amount buttons */
+.dn-quick-amounts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.dn-quick-btn {
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark);
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+}
+.dn-quick-btn:hover,
+.dn-quick-btn.selected {
+    background: rgba(255,107,0,0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Amount input */
+.dn-input-wrap {
+    position: relative;
+    margin-bottom: 22px;
+}
+.dn-input-prefix {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--navy);
+    pointer-events: none;
+}
+.dn-amount-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 16px 16px 36px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark);
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    transition: 0.25s;
+    background: var(--light);
+}
+.dn-amount-input:focus {
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255,107,0,0.1);
+}
+.dn-amount-input::placeholder { color: #cbd5e1; font-weight: 400; font-size: 16px; }
+
+/* Error */
+.dn-error {
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #dc2626;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Submit button */
+.dn-submit-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.03em;
+}
+.dn-submit-btn:hover {
+    background: #e05500;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,107,0,0.3);
+}
+
+.dn-submit-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+.dn-submit-note i { color: #22c55e; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .dn-layout { grid-template-columns: 1fr; margin-top: 0; }
+    .dn-quick-amounts { grid-template-columns: repeat(2,1fr); }
+    .dn-form-header,
+    .dn-form-body { padding-left: 20px; padding-right: 20px; }
+}
+</style>
+
+<div class="dn-page">
+
+    <!-- BANNER -->
+    <div class="dn-banner">
+        <div class="container dn-banner-inner">
+
+            <!-- Step indicator -->
+            <div class="dn-step-pills">
+                <div class="dn-step active">
+                    <div class="dn-step-num">1</div>
+                    Amount
                 </div>
-            {% endif %}
-
-            <!-- INPUT -->
-            <div class="mb-4">
-                <label class="form-label fw-semibold">Donation Amount ($)</label>
-                <input type="number"
-                       name="amount"
-                       class="form-control form-control-lg"
-                       placeholder="Enter amount (e.g. 50)"
-                       required>
+                <div class="dn-step-line"></div>
+                <div class="dn-step">
+                    <div class="dn-step-num">2</div>
+                    Payment
+                </div>
+                <div class="dn-step-line"></div>
+                <div class="dn-step">
+                    <div class="dn-step-num">3</div>
+                    Confirm
+                </div>
+                <div class="dn-step-line"></div>
+                <div class="dn-step">
+                    <div class="dn-step-num">4</div>
+                    Done
+                </div>
             </div>
 
-            <!-- BUTTON -->
-            <button class="btn donate-btn w-100">
-                Continue to Payment →
-            </button>
-
-        </form>
-
+            <h1>Make a Donation</h1>
+            <p>Choose how much you'd like to give — every amount makes a real difference.</p>
+        </div>
     </div>
 
+    <!-- LAYOUT -->
+    <div class="dn-layout">
+
+        <!-- LEFT — Form -->
+        <div class="dn-card">
+            <div class="dn-form-header">
+                <h4>Choose Your Donation Amount</h4>
+                <p>Select a suggested amount or enter your own below.</p>
+            </div>
+            <div class="dn-form-body">
+
+                {% if error %}
+                <div class="dn-error">
+                    <i class="bi bi-exclamation-circle-fill"></i> {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST" id="donateForm">
+                    {% csrf_token %}
+
+                    <!-- Quick amount buttons -->
+                    <div class="dn-quick-amounts" id="quickAmounts">
+                        <button type="button" class="dn-quick-btn" data-amount="10">$10</button>
+                        <button type="button" class="dn-quick-btn" data-amount="25">$25</button>
+                        <button type="button" class="dn-quick-btn" data-amount="50">$50</button>
+                        <button type="button" class="dn-quick-btn" data-amount="100">$100</button>
+                        <button type="button" class="dn-quick-btn" data-amount="250">$250</button>
+                        <button type="button" class="dn-quick-btn" data-amount="500">$500</button>
+                        <button type="button" class="dn-quick-btn" data-amount="1000">$1,000</button>
+                        <button type="button" class="dn-quick-btn">Custom</button>
+                    </div>
+
+                    <!-- Amount input -->
+                    <div class="dn-input-wrap">
+                        <span class="dn-input-prefix">$</span>
+                        <input type="number"
+                               name="amount"
+                               id="amountInput"
+                               class="dn-amount-input"
+                               placeholder="Enter your amount"
+                               min="1"
+                               required>
+                    </div>
+
+                    <button type="submit" class="dn-submit-btn">
+                        Continue to Payment <i class="bi bi-arrow-right"></i>
+                    </button>
+
+                    <p class="dn-submit-note">
+                        <i class="bi bi-shield-fill-check"></i>
+                        Secure &amp; encrypted — your information is always protected
+                    </p>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT — Cause Info -->
+        <div class="dn-card">
+            <div class="dn-cause-body">
+                <div class="dn-cause-title">{{ cause.title }}</div>
+                <p class="dn-cause-desc">{{ cause.description }}</p>
+
+                <!-- Progress -->
+                <div class="dn-prog-labels">
+                    <span class="dn-prog-raised">
+                        ${{ cause.amount_raised }}
+                        <small>raised</small>
+                    </span>
+                    <span class="dn-prog-pct">{{ cause.progress_percentage }}%</span>
+                </div>
+                <div class="dn-prog-bar-bg">
+                    <div class="dn-prog-bar-fill" style="width:{{ cause.progress_percentage }}%"></div>
+                </div>
+                <div class="dn-prog-goal">Goal: ${{ cause.target_amount }}</div>
+
+                <!-- Trust signals -->
+                <div class="dn-trust">
+                    <div class="dn-trust-row">
+                        <i class="bi bi-shield-fill-check"></i>
+                        All donations are verified &amp; secure
+                    </div>
+                    <div class="dn-trust-row">
+                        <i class="bi bi-clock-fill"></i>
+                        Confirmation within 24 hours
+                    </div>
+                    <div class="dn-trust-row">
+                        <i class="bi bi-heart-fill"></i>
+                        100% goes directly to the cause
+                    </div>
+                    <div class="dn-trust-row">
+                        <i class="bi bi-receipt"></i>
+                        Donation receipt provided
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
-<!-- STYLING -->
-<style>
-
-/* 🔹 CONTAINER */
-.donate-container{
-    max-width:900px;
-    margin:80px auto;
-}
-
-/* 🔹 CARD STYLE (MATCH HOME UI) */
-.donate-card{
-    background:white;
-    padding:30px;
-    border-radius:14px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.06);
-}
-
-/* 🔹 AMOUNT TEXT */
-.amount{
-    font-size:20px;
-    font-weight:700;
-    color:#162e4d;
-}
-
-/* 🔹 PROGRESS BAR */
-.progress{
-    height:14px;
-    border-radius:10px;
-    background:#e5e7eb;
-    overflow:hidden;
-}
-
-.progress-bar{
-    background:#162e4d;
-    font-size:12px;
-    font-weight:600;
-}
-
-/* 🔹 INPUT */
-.form-control{
-    border-radius:10px;
-    padding:14px;
-    border:1px solid #d1d5db;
-    transition:0.3s;
-}
-
-.form-control:focus{
-    border-color:#162e4d;
-    box-shadow:0 0 0 2px rgba(22,46,77,0.15);
-}
-
-/* 🔹 BUTTON */
-.donate-btn{
-    background:#162e4d;
-    color:white;
-    padding:14px;
-    border:none;
-    border-radius:10px;
-    font-weight:600;
-    transition:0.3s;
-}
-
-.donate-btn:hover{
-    background:#0f223b;
-    transform:translateY(-2px);
-}
-
-/* 🔹 MOBILE */
-@media (max-width:768px){
-    .donate-container{
-        margin:40px 15px;
-    }
-
-    .donate-card{
-        padding:20px;
-    }
-}
-
-</style>
+<script>
+// Quick amount selector
+document.querySelectorAll('.dn-quick-btn[data-amount]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.dn-quick-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('amountInput').value = btn.dataset.amount;
+    });
+});
+// Custom clears
+document.querySelector('.dn-quick-btn:not([data-amount])').addEventListener('click', function() {
+    document.querySelectorAll('.dn-quick-btn').forEach(b => b.classList.remove('selected'));
+    this.classList.add('selected');
+    document.getElementById('amountInput').value = '';
+    document.getElementById('amountInput').focus();
+});
+</script>
 
 {% endblock %}
