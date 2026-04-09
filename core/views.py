@@ -332,3 +332,42 @@ def service_detail(request, service_name):
 
 
 
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import CelebrityEndorsement
+from .forms import CelebrityEndorsementForm
+
+
+def manage_endorsements(request):
+    endorsements = CelebrityEndorsement.objects.all()
+
+    form = CelebrityEndorsementForm()
+
+    if request.method == "POST":
+        form = CelebrityEndorsementForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('manage_endorsements')
+
+    return render(request, "dashboard/manage_endorsements.html", {
+        "endorsements": endorsements,
+        "form": form
+    })
+
+
+def edit_endorsement(request, pk):
+    endorsement = get_object_or_404(CelebrityEndorsement, pk=pk)
+
+    form = CelebrityEndorsementForm(request.POST or None, request.FILES or None, instance=endorsement)
+
+    if form.is_valid():
+        form.save()
+        return redirect('manage_endorsements')
+
+    return render(request, "dashboard/edit_endorsement.html", {
+        "form": form
+    })
+
+def delete_endorsement(request, pk):
+    endorsement = get_object_or_404(CelebrityEndorsement, pk=pk)
+    endorsement.delete()
+    return redirect('manage_endorsements')

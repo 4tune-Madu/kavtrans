@@ -24,5 +24,10 @@ urlpatterns = [
     #Services on Logistics Home
     path('services/<str:service_name>/', views.service_detail, name='service_detail'),
 
+
+    #endorsement views.. Note endorsement is passed thhrough home view
+    path('dashboard/endorsements/', views.manage_endorsements, name='manage_endorsements'),
+    path('dashboard/endorsements/edit/<int:pk>/', views.edit_endorsement, name='edit_endorsement'),
+    path('dashboard/endorsements/delete/<int:pk>/', views.delete_endorsement, name='delete_endorsement'),
 ]
 
