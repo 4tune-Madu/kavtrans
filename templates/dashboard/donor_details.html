@@ -1,48 +1,457 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
 
 <style>
-.form-box{
-    max-width:600px;
-    margin:60px auto;
-    background:#fff;
-    padding:40px;
-    border-radius:15px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css');
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+    --navy:   #162e4d;
+    --dark:   #0f172a;
+    --accent: #ff6b00;
+    --light:  #f8fafc;
+    --muted:  #64748b;
+    --border: #e2e8f0;
+}
+
+.dd-page {
+    min-height: 100vh;
+    background: var(--light);
+    font-family: 'Poppins', sans-serif;
+    animation: ddFade 0.5s cubic-bezier(0.4,0,0.2,1) both;
+    padding-bottom: 80px;
+}
+@keyframes ddFade {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── BANNER ── */
+.dd-banner {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 100%);
+    padding: 52px 0 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.dd-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+.dd-banner-inner { position: relative; z-index: 1; }
+
+.dd-banner-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: rgba(255,107,0,0.15);
+    border: 1.5px solid rgba(255,107,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+}
+.dd-banner-icon i { font-size: 26px; color: var(--accent); }
+
+.dd-banner h1 {
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+}
+.dd-banner p {
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.dd-optional-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    margin-top: 14px;
+}
+
+/* ── LAYOUT ── */
+.dd-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 0;
+    align-items: start;
+}
+
+/* ── CARD ── */
+.dd-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+.dd-card-header {
+    padding: 24px 28px 0;
+}
+.dd-card-header h4 {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 6px;
+}
+.dd-card-header p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0;
+}
+.dd-card-body { padding: 22px 28px 28px; }
+
+/* ── FORM FIELDS ── */
+.dd-field { margin-bottom: 18px; }
+.dd-field label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+.dd-field label i { color: var(--accent); font-size: 13px; }
+.dd-field label .opt-tag {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(100,116,139,0.6);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 2px;
+}
+
+.dd-input,
+.dd-textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark);
+    background: var(--light);
+    outline: none;
+    transition: 0.25s;
+}
+.dd-input:focus,
+.dd-textarea:focus {
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255,107,0,0.1);
+}
+.dd-input::placeholder,
+.dd-textarea::placeholder { color: #cbd5e1; }
+.dd-textarea { resize: none; min-height: 110px; }
+
+/* Char counter */
+.dd-field-meta {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+.dd-char-count { font-size: 11px; color: var(--muted); }
+
+/* ── SUBMIT ── */
+.dd-submit-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 10px;
+}
+.dd-submit-btn:hover {
+    background: #e05500;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255,107,0,0.3);
+}
+
+.dd-skip-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.dd-skip-link:hover { border-color: var(--accent); color: var(--accent); }
+
+.dd-privacy-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 14px;
+    text-align: center;
+    line-height: 1.5;
+}
+.dd-privacy-note i { color: #22c55e; flex-shrink: 0; }
+
+/* ── SIDEBAR ── */
+.dd-sidebar-inner { padding: 24px; }
+.dd-sidebar-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+/* Why share card */
+.dd-why-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+.dd-why-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.dd-why-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,107,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.dd-why-icon i { font-size: 15px; color: var(--accent); }
+.dd-why-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+.dd-why-text span   { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* Privacy card */
+.dd-privacy-card {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-top: 4px;
+}
+.dd-privacy-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.dd-privacy-card-title i { color: #22c55e; }
+.dd-privacy-card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .dd-layout { grid-template-columns: 1fr; }
+    .dd-card-header,
+    .dd-card-body { padding-left: 20px; padding-right: 20px; }
 }
 </style>
 
-<div class="form-box">
+<div class="dd-page">
 
-    <h4 class="mb-3">Donation Details (Optional)</h4>
+    <!-- BANNER -->
+    <div class="dd-banner">
+        <div class="container dd-banner-inner">
 
-    <p class="text-muted">
-        Providing your details helps us acknowledge your generosity and send confirmation updates.
-    </p>
+            <div class="dd-banner-icon">
+                <i class="bi bi-person-heart"></i>
+            </div>
 
-    <form method="POST">
-        {% csrf_token %}
+            <h1>Share Your Details</h1>
+            <p>Providing your details helps us acknowledge your generosity and keep you updated on the cause you've supported.</p>
+            <div class="dd-optional-badge">
+                <i class="bi bi-info-circle"></i> This step is completely optional
+            </div>
 
-        <div class="mb-3">
-            <label>Your Name</label>
-            <input type="text" name="name" class="form-control" placeholder="Optional">
+        </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="dd-layout">
+
+        <!-- LEFT — Form -->
+        <div class="dd-card">
+            <div class="dd-card-header">
+                <h4>Donation Details</h4>
+                <p>All fields below are optional. Fill in as much or as little as you're comfortable with.</p>
+            </div>
+            <div class="dd-card-body">
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="dd-field">
+                        <label>
+                            <i class="bi bi-person-fill"></i>
+                            Your Name
+                            <span class="opt-tag">— optional</span>
+                        </label>
+                        <input type="text"
+                               name="name"
+                               class="dd-input"
+                               placeholder="How would you like to be acknowledged?">
+                    </div>
+
+                    <div class="dd-field">
+                        <label>
+                            <i class="bi bi-envelope-fill"></i>
+                            Email Address
+                            <span class="opt-tag">— optional</span>
+                        </label>
+                        <input type="email"
+                               name="email"
+                               class="dd-input"
+                               placeholder="For confirmation updates only">
+                    </div>
+
+                    <div class="dd-field">
+                        <label>
+                            <i class="bi bi-chat-left-heart-fill"></i>
+                            Your Message or Reason
+                            <span class="opt-tag">— optional</span>
+                        </label>
+                        <textarea name="note"
+                                  class="dd-textarea"
+                                  id="donorNote"
+                                  maxlength="400"
+                                  placeholder="Why are you donating? Share a word of encouragement for those this cause will help..."></textarea>
+                        <div class="dd-field-meta">
+                            <span class="dd-char-count"><span id="charCount">0</span> / 400</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="dd-submit-btn">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Submit Details
+                    </button>
+
+                    <a href="{% url 'causes_page' %}" class="dd-skip-link">
+                        <i class="bi bi-arrow-right"></i> Skip &amp; Go to Causes
+                    </a>
+
+                    <p class="dd-privacy-note">
+                        <i class="bi bi-shield-fill-check"></i>
+                        Your details are kept private and used only for donation confirmation. We never share your information.
+                    </p>
+
+                </form>
+
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label>Email Address</label>
-            <input type="email" name="email" class="form-control" placeholder="Optional">
+        <!-- RIGHT — Sidebar -->
+        <div class="dd-card">
+            <div class="dd-sidebar-inner">
+
+                <div class="dd-sidebar-label">Why Share?</div>
+
+                <div class="dd-why-list">
+                    <div class="dd-why-item">
+                        <div class="dd-why-icon"><i class="bi bi-bell-fill"></i></div>
+                        <div class="dd-why-text">
+                            <strong>Stay Updated</strong>
+                            <span>We'll notify you when your donation is confirmed and the impact is felt.</span>
+                        </div>
+                    </div>
+                    <div class="dd-why-item">
+                        <div class="dd-why-icon"><i class="bi bi-receipt"></i></div>
+                        <div class="dd-why-text">
+                            <strong>Receive Your Receipt</strong>
+                            <span>A donation receipt will be sent to your email for your records.</span>
+                        </div>
+                    </div>
+                    <div class="dd-why-item">
+                        <div class="dd-why-icon"><i class="bi bi-heart-fill"></i></div>
+                        <div class="dd-why-text">
+                            <strong>Personal Acknowledgement</strong>
+                            <span>Your name can be included in our donor recognition with your permission.</span>
+                        </div>
+                    </div>
+                    <div class="dd-why-item">
+                        <div class="dd-why-icon"><i class="bi bi-people-fill"></i></div>
+                        <div class="dd-why-text">
+                            <strong>Inspire Others</strong>
+                            <span>Your message may be shared (anonymously if you prefer) to inspire future donors.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy card -->
+                <div class="dd-privacy-card">
+                    <div class="dd-privacy-card-title">
+                        <i class="bi bi-shield-fill-check"></i>
+                        Privacy Guaranteed
+                    </div>
+                    <p>Your details are handled in strict confidence. We never sell, share, or misuse your personal information — ever.</p>
+                </div>
+
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label>Reason / Message</label>
-            <textarea name="note" class="form-control" rows="4"
-                placeholder="Why are you donating? (optional)"></textarea>
-        </div>
-
-        <button class="btn btn-dark w-100">Submit Details</button>
-
-    </form>
-
+    </div>
 </div>
+
+<script>
+// Character counter for message textarea
+const textarea  = document.getElementById('donorNote');
+const charCount = document.getElementById('charCount');
+if (textarea && charCount) {
+    textarea.addEventListener('input', () => {
+        const len = textarea.value.length;
+        charCount.textContent = len;
+        charCount.style.color = len > 360 ? '#ef4444' : '';
+    });
+}
+</script>
 
 {% endblock %}

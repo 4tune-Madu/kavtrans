@@ -126,3 +126,63 @@ class Service(models.Model):
 
     def __str__(self):
         return self.title
+
+
+
+from django.db import models
+###Endoresement section.
+
+class CelebrityEndorsement(models.Model):
+    """
+    A celebrity or notable figure publicly endorsing KAVTRANS donation causes.
+    Uploaded and managed entirely from the Django admin dashboard.
+    """
+
+    name = models.CharField(
+        max_length=150,
+        help_text="Full name or stage name of the endorser (e.g. 'Burna Boy')"
+    )
+
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Their title or profession (e.g. 'Grammy Award-winning Artist')"
+    )
+
+    image = models.ImageField(
+        upload_to='endorsements/',
+        help_text="Professional photo of the endorser — portrait format works best (min 600×700px)"
+    )
+
+    quote = models.TextField(
+        help_text="Their endorsement statement or comment about the cause"
+    )
+
+    cause = models.ForeignKey(
+        'DonationCause',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='endorsements',
+        help_text="Optionally link this endorsement to a specific cause"
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Uncheck to hide this endorsement from the public page without deleting it"
+    )
+
+    display_order = models.PositiveIntegerField(
+        default=0,
+        help_text="Lower numbers appear first. Use this to control display order."
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['display_order', '-created_at']
+        verbose_name = 'Celebrity Endorsement'
+        verbose_name_plural = 'Celebrity Endorsements'
+
+    def __str__(self):
+        return f"{self.name} — {self.title or 'Endorser'}"

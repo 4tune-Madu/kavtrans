@@ -1738,6 +1738,352 @@ html, body { overflow-x: hidden; max-width: 100%; }
     </div>
 </section>
 
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PASTE THIS BLOCK:
+     1. The <style> block → inside the existing <style> tag in home4.html
+     2. The HTML section → directly after </section> of don-causes-section
+     No JS needed — pure CSS animations.
+═══════════════════════════════════════════════════════════ -->
+
+
+<!-- ─── CSS — paste inside the existing <style> block ─────── -->
+<style id="ENDORSEMENT_CSS_PASTE_INTO_STYLE_TAG">
+
+/* ══════════════════════════════════════════════
+   CELEBRITY ENDORSEMENT SECTION
+══════════════════════════════════════════════ */
+.endorsement-section {
+    padding: 100px 0;
+    background: #f8fafc;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle decorative pattern */
+.endorsement-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(255,107,0,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(22,46,77,0.04) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.endorsement-header {
+    text-align: center;
+    margin-bottom: 64px;
+    position: relative;
+    z-index: 1;
+}
+
+.endorsement-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #ff6b00;
+    margin-bottom: 14px;
+}
+
+.endorsement-header h2 {
+    font-size: clamp(26px, 3vw, 40px);
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+.endorsement-header p {
+    color: #64748b;
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* ── ENDORSEMENT CARDS ── */
+.endorsement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Single endorsement card */
+.endorsement-card {
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+    border: 1px solid #e2e8f0;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1),
+                box-shadow 0.35s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+    /* Stagger reveal — added via JS below */
+    opacity: 0;
+    transform: translateY(28px);
+}
+
+.endorsement-card.ec-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.65s cubic-bezier(0.4,0,0.2,1),
+                transform 0.65s cubic-bezier(0.4,0,0.2,1),
+                box-shadow 0.35s ease;
+}
+
+.endorsement-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.14);
+}
+
+/* Image panel */
+.ec-image-panel {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.ec-image-panel img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    transition: transform 0.55s ease;
+}
+
+.endorsement-card:hover .ec-image-panel img {
+    transform: scale(1.05);
+}
+
+/* Gradient overlay on image */
+.ec-image-panel::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(15,23,42,0.55), transparent);
+}
+
+/* "Endorser" badge on image */
+.ec-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 2;
+    background: rgba(255,107,0,0.92);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 20px;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    backdrop-filter: blur(4px);
+}
+
+/* Cause tag on image (if linked to a cause) */
+.ec-cause-tag {
+    position: absolute;
+    bottom: 14px;
+    left: 16px;
+    z-index: 2;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 20px;
+    padding: 4px 12px;
+}
+
+/* Body */
+.ec-body {
+    padding: 26px 26px 28px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Large opening quote mark */
+.ec-quote-mark {
+    font-size: 72px;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: rgba(255,107,0,0.15);
+    line-height: 0.6;
+    margin-bottom: 12px;
+    display: block;
+    font-weight: 900;
+}
+
+.ec-quote-text {
+    font-size: 15px;
+    color: #334155;
+    line-height: 1.78;
+    font-style: italic;
+    margin-bottom: 22px;
+    flex: 1;
+}
+
+/* Divider */
+.ec-divider {
+    height: 1px;
+    background: linear-gradient(90deg, #ff6b00, #e2e8f0, transparent);
+    margin-bottom: 18px;
+}
+
+/* Name + title */
+.ec-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ec-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid #ff6b00;
+    flex-shrink: 0;
+}
+
+.ec-identity-text strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 2px;
+}
+
+.ec-identity-text span {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* ── IF NO ENDORSEMENTS ── */
+.ec-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+.ec-empty i { font-size: 36px; display: block; margin-bottom: 12px; }
+.ec-empty p { font-size: 14px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+    .endorsement-section { padding: 70px 0; }
+    .endorsement-grid { grid-template-columns: 1fr; gap: 24px; }
+    .ec-image-panel { height: 240px; }
+}
+
+</style>
+<!-- ─── END CSS ──────────────────────────────────────────── -->
+
+
+<!-- ─── HTML SECTION — paste directly after </section> of don-causes-section ── -->
+{% if endorsements %}
+<section class="endorsement-section">
+    <div class="container">
+
+        <div class="endorsement-header">
+            <div class="endorsement-eyebrow">
+                <i class="bi bi-stars"></i> Voices of Support
+            </div>
+            <h2>Celebrated Faces Behind the Cause</h2>
+            <p>Some of the world's most recognised names have chosen to stand with us. Here's why they believe in what we do.</p>
+        </div>
+
+        <div class="endorsement-grid" id="endorsementGrid">
+            {% for endorser in endorsements %}
+            <div class="endorsement-card" data-delay="{{ forloop.counter0 }}">
+
+                <!-- Image -->
+                <div class="ec-image-panel">
+                    <img src="{{ endorser.image.url }}" alt="{{ endorser.name }}">
+
+                    <!-- Badge -->
+                    <span class="ec-badge">
+                        <i class="bi bi-patch-check-fill"></i> Endorser
+                    </span>
+
+                    <!-- Cause tag if linked -->
+                    {% if endorser.cause %}
+                    <span class="ec-cause-tag">{{ endorser.cause.title|truncatechars:30 }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Body -->
+                <div class="ec-body">
+
+                    <span class="ec-quote-mark">"</span>
+
+                    <p class="ec-quote-text">{{ endorser.quote }}</p>
+
+                    <div class="ec-divider"></div>
+
+                    <div class="ec-identity">
+                        <img src="{{ endorser.image.url }}" alt="{{ endorser.name }}" class="ec-avatar">
+                        <div class="ec-identity-text">
+                            <strong>{{ endorser.name }}</strong>
+                            {% if endorser.title %}
+                            <span>{{ endorser.title }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% endif %}
+<!-- ─── END HTML SECTION ─────────────────────────────────── -->
+
+
+<!-- ─── JS — paste before </script> of the last script block in home4.html ── -->
+<script id="ENDORSEMENT_JS_PASTE_BEFORE_ENDBLOCK">
+// Staggered scroll reveal for endorsement cards
+(function() {
+    const cards = document.querySelectorAll('.endorsement-card');
+    if (!cards.length) return;
+
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const delay = parseInt(entry.target.dataset.delay || 0) * 120;
+                setTimeout(() => {
+                    entry.target.classList.add('ec-visible');
+                }, delay);
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+
+    cards.forEach(card => obs.observe(card));
+})();
+</script>
+<!-- ─── END JS ────────────────────────────────────────────── -->
+
+
 <!-- EMOTIONAL VISUAL -->
 <section class="visual-section">
     <div class="visual-content">

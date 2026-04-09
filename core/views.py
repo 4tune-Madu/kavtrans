@@ -4,10 +4,17 @@ from tracking.models import TrackingHistory
 from core.models import DonationCause          # ✅ ADD
 from django.db.models import Sum               # ✅ ADD
 
+from django.shortcuts import render
+from packages.models import Package
+from tracking.models import TrackingHistory
+from core.models import DonationCause, CelebrityEndorsement   # ✅ ADD CelebrityEndorsement
+from django.db.models import Sum
+
+
 def home(request):
 
     tracking_result = None
-    latest_update = None
+    latest_update   = None
 
     tracking_number = request.GET.get("tracking_number")
 
@@ -23,19 +30,23 @@ def home(request):
         except Package.DoesNotExist:
             tracking_result = "not_found"
 
-    # ✅ DONATION DATA
-    causes = DonationCause.objects.filter(is_active=True)
+    # Donation data
+    causes       = DonationCause.objects.filter(is_active=True)
     total_raised = DonationCause.objects.aggregate(total=Sum('amount_raised'))['total'] or 0
     total_target = DonationCause.objects.aggregate(total=Sum('target_amount'))['total'] or 0
     total_causes = causes.count()
 
+    # ✅ Celebrity endorsements — active ones only, in display order
+    endorsements = CelebrityEndorsement.objects.filter(is_active=True).select_related('cause')
+
     return render(request, "core/home9.html", {
         "tracking_result": tracking_result,
-        "latest_update": latest_update,
-        "causes": causes,              # ✅
-        "total_raised": total_raised,  # ✅
-        "total_target": total_target,  # ✅
-        "total_causes": total_causes,  # ✅
+        "latest_update":   latest_update,
+        "causes":          causes,
+        "total_raised":    total_raised,
+        "total_target":    total_target,
+        "total_causes":    total_causes,
+        "endorsements":    endorsements,      # ✅ new
     })
 
 
@@ -318,5 +329,6 @@ def service_detail(request, service_name):
         "service": service
     })
     print("Service fetched:", service)
+
 
 

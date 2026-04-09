@@ -44,3 +44,46 @@ from .models import Service
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug')
     prepopulated_fields = {'slug': ('title',)}
+
+
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import CelebrityEndorsement
+
+
+@admin.register(CelebrityEndorsement)
+class CelebrityEndorsementAdmin(admin.ModelAdmin):
+    """
+    Admin panel for managing celebrity/notable endorsements on the donation page.
+    """
+
+    list_display  = ('endorser_preview', 'name', 'title', 'cause', 'is_active', 'display_order', 'created_at')
+    list_editable = ('is_active', 'display_order')
+    list_filter   = ('is_active', 'cause')
+    search_fields = ('name', 'title', 'quote')
+    ordering      = ('display_order', '-created_at')
+
+    fieldsets = (
+        ('Endorser Identity', {
+            'fields': ('name', 'title', 'image'),
+            'description': 'Upload a high-quality portrait image and enter the endorser\'s full name and role.'
+        }),
+        ('Endorsement Content', {
+            'fields': ('quote', 'cause'),
+            'description': 'The statement they are making and optionally which specific cause they are endorsing.'
+        }),
+        ('Visibility & Order', {
+            'fields': ('is_active', 'display_order'),
+            'description': 'Control whether this appears on the site and in what order relative to others.'
+        }),
+    )
+
+    def endorser_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #ff6b00;" />',
+                obj.image.url
+            )
+        return '—'
+
+    endorser_preview.short_description = 'Photo'
