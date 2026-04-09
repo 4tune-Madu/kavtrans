@@ -130,6 +130,7 @@ class Service(models.Model):
 
 
 from django.db import models
+from cloudinary.models import CloudinaryField
 ###Endoresement section.
 
 class CelebrityEndorsement(models.Model):
@@ -149,10 +150,11 @@ class CelebrityEndorsement(models.Model):
         help_text="Their title or profession (e.g. 'Grammy Award-winning Artist')"
     )
 
-    image = models.ImageField(
-        upload_to='endorsements/',
-        help_text="Professional photo of the endorser — portrait format works best (min 600×700px)"
-    )
+    image = CloudinaryField(
+    'image',
+    folder='endorsements',
+    help_text="Professional photo..."
+)
 
     quote = models.TextField(
         help_text="Their endorsement statement or comment about the cause"
