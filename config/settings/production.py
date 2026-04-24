@@ -4,7 +4,7 @@ import os
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['.onrender.com']
+ALLOWED_HOSTS = ['.onrender.com', 'kavtrans.com', 'www.kavtrans.com']
 
 
 # POSTGRES DATABASE (Render ENV VARIABLES)
