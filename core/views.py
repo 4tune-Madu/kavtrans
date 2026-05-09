@@ -183,6 +183,10 @@ import random
 def donate_amount(request, cause_id):
     cause = get_object_or_404(DonationCause, id=cause_id)
 
+    # Clear any leftover session data from a previous flow
+    for key in ['donation_amount', 'payment_type', 'crypto_currency']:
+        request.session.pop(key, None)
+
     if request.method == "POST":
         amount = request.POST.get("amount")
 
@@ -234,6 +238,9 @@ def choose_payment(request, cause_id):
                     "error": "Please select a crypto currency"
                 })
             request.session['crypto_currency'] = crypto_currency
+        else:
+                # Clear it so stale crypto session doesn't linger
+            request.session.pop('crypto_currency', None)
 
         return redirect('payment_details', cause_id=cause.id)
 
@@ -301,6 +308,8 @@ def causes_page(request):
     }
     return render(request, 'dashboard/causes_page.html', context)
 
+from django.contrib import messages
+
 def donor_details(request, donation_id):
     donation = get_object_or_404(Donation, id=donation_id)
 
@@ -308,8 +317,18 @@ def donor_details(request, donation_id):
         donation.donor_name = request.POST.get("name")
         donation.donor_email = request.POST.get("email")
         donation.note = request.POST.get("note")
-        donation.save()
 
+        if request.FILES.get("image"):
+            img = request.FILES["image"]
+
+            # ✅ validation
+            if img.size > 2 * 1024 * 1024:
+                messages.error(request, "Image too large (max 2MB)")
+                return redirect(request.path)
+
+            donation.donor_image = img
+
+        donation.save()
         return redirect("donation_thank_you")
 
     return render(request, "dashboard/donor_details.html", {"donation": donation})
@@ -371,3 +390,12 @@ def delete_endorsement(request, pk):
     endorsement = get_object_or_404(CelebrityEndorsement, pk=pk)
     endorsement.delete()
     return redirect('manage_endorsements')
+
+
+def donor_list(request):
+    donors = Donation.objects.order_by('-created_at')
+    return render(request, "dashboard/donor_list.html", {"donors": donors})
+
+def donor_detail(request, donor_id):
+    donor = get_object_or_404(Donation, id=donor_id)
+    return render(request, "dashboard/donor_detail.html", {"donor": donor})

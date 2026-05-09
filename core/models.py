@@ -37,6 +37,9 @@ class Donation(models.Model):
     donor_name = models.CharField(max_length=255, blank=True, null=True)
     donor_email = models.EmailField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)
+    donor_image = CloudinaryField('image', blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     # Generic relation to any account type
     payment_account_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

@@ -327,7 +327,7 @@
             </div>
             <div class="dd-card-body">
 
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <div class="dd-field">
@@ -352,6 +352,18 @@
                                name="email"
                                class="dd-input"
                                placeholder="For confirmation updates only">
+                    </div>
+                    
+                    <div class="dd-field">
+                        <label>
+                            <i class="bi bi-image-fill"></i>
+                            Upload Image
+                            <span class="opt-tag">— optional</span>
+                        </label>
+                        <input type="file"
+                               name="image"
+                               class="dd-input"
+                               accept="image/*">
                     </div>
 
                     <div class="dd-field">

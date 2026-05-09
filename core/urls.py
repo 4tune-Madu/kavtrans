@@ -29,5 +29,9 @@ urlpatterns = [
     path('dashboard/endorsements/', views.manage_endorsements, name='manage_endorsements'),
     path('dashboard/endorsements/edit/<int:pk>/', views.edit_endorsement, name='edit_endorsement'),
     path('dashboard/endorsements/delete/<int:pk>/', views.delete_endorsement, name='delete_endorsement'),
+
+    #donor details admin
+    path('donors/', views.donor_list, name='donor_list'),
+    path('donors/<int:donor_id>/', views.donor_detail, name='donor_detail'),
 ]
 

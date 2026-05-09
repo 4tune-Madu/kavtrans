@@ -270,6 +270,7 @@ def edit_payment_account(request, account_type, id):
             account.bank_name = request.POST.get("bank_name")
             account.swift_code = request.POST.get("swift_code")
             account.branch = request.POST.get("branch")
+            account.currency = request.POST.get("currency", "USD")
         elif account_type == "crypto":
             account.currency = request.POST.get("currency")
             account.wallet_address = request.POST.get("wallet_address")
