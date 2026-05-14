@@ -97,11 +97,11 @@ class DonationAdmin(admin.ModelAdmin):
     list_display = ('donor_name', 'donor_email', 'created_at', 'image_preview')
 
     def image_preview(self, obj):
-    if obj.donor_image:
-        return format_html('<img src="{}" width="50" />', obj.donor_image.url)
-    return "No Image"
-
-    image_preview.allow_tags = True
-    image_preview.short_description = "Image"
+        if obj.donor_image:
+            return format_html('<img src="{}" width="50" />', obj.donor_image.url)
+        return "No Image"
+    
+        image_preview.allow_tags = True
+        image_preview.short_description = "Image"
 
 
