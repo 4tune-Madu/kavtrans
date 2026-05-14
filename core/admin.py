@@ -90,22 +90,18 @@ class CelebrityEndorsementAdmin(admin.ModelAdmin):
 
 from django.contrib import admin
 from .models import Donation
+from django.utils.html import format_html
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
     list_display = ('donor_name', 'donor_email', 'created_at', 'image_preview')
 
     def image_preview(self, obj):
-        if obj.donor_image:
-            return f'<img src="{obj.donor_image.url}" width="50" />'
-        return "No Image"
+    if obj.donor_image:
+        return format_html('<img src="{}" width="50" />', obj.donor_image.url)
+    return "No Image"
 
     image_preview.allow_tags = True
     image_preview.short_description = "Image"
 
-from django.utils.html import format_html
 
-def image_preview(self, obj):
-    if obj.donor_image:
-        return format_html('<img src="{}" width="50" />', obj.donor_image.url)
-    return "No Image"
